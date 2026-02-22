@@ -1,7 +1,7 @@
 package generate
 
 type ModuleDto struct {
-	Name     string `query:"name"`
-	Type     string `query:"type"`
-	Template string `query:"template"`
+	Name     string `flag:"name"`
+	Type     string `flag:"type"`
+	Template string `flag:"template"`
 }

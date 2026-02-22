@@ -15,9 +15,7 @@ import (
 
 func main() {
 	stop, err := goose.Start(
-		cliPlatform,
-		rootModule,
-		initializers,
+		goose.CLI(cliPlatform, rootModule, initializers),
 	)
 	if err != nil {
 		panic(err)

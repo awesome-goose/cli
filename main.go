@@ -17,9 +17,7 @@ const VERSION = "1.0.0"
 
 func main() {
 	stop, err := goose.Start(
-		cliPlatform,
-		rootModule,
-		initializers,
+		goose.CLI(cliPlatform, rootModule, initializers),
 	)
 	if err != nil {
 		panic(err)

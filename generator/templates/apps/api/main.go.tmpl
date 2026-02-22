@@ -15,9 +15,7 @@ import (
 
 func main() {
 	stop, err := goose.Start(
-		apiPlatform,
-		rootModule,
-		initializers,
+		goose.API(apiPlatform, rootModule, initializers),
 	)
 	if err != nil {
 		panic(err)

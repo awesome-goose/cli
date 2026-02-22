@@ -1,0 +1,100 @@
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"{{.ModulePath}}/app/api"
+	"{{.ModulePath}}/app/cli"
+	"{{.ModulePath}}/app/web"
+	"github.com/awesome-goose/goose"
+	"github.com/awesome-goose/goose/log"
+	"github.com/awesome-goose/goose/log/formatters"
+	"github.com/awesome-goose/goose/log/modifiers"
+	"github.com/awesome-goose/goose/log/processors"
+	apiPkg "github.com/awesome-goose/goose/platforms/api"
+	cliPkg "github.com/awesome-goose/goose/platforms/cli"
+	webPkg "github.com/awesome-goose/goose/platforms/web"
+	"github.com/awesome-goose/goose/types"
+)
+
+// {{.AppName}} - Multi-platform application
+// Run modes:
+// - `go run main.go` - Starts API server on port 8080 and Web server on port 3000
+// - `go run main.go cli <command>` - Runs CLI commands
+
+func main() {
+	stop, err := goose.Start(
+		// API platform instance - runs on port 8080
+		goose.API(
+			apiPlatform,
+			apiModule,
+			sharedInitializers,
+		),
+		// Web platform instance - runs on port 3000
+		goose.Web(
+			webPlatform,
+			webModule,
+			sharedInitializers,
+		),
+		// CLI platform instance - only runs when `cli` argument is passed
+		goose.CLI(
+			cliPlatform,
+			cliModule,
+			sharedInitializers,
+		),
+	)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	defer stop()
+}
+
+var (
+	// API Platform Configuration
+	apiPlatform = apiPkg.NewPlatform(
+		apiPkg.WithName("{{.AppNameLower}}-api"),
+		apiPkg.WithPort(8080),
+	)
+	apiModule = &api.ApiModule{}
+
+	// Web Platform Configuration
+	webPlatform = webPkg.NewPlatform(
+		webPkg.WithName("{{.AppNameLower}}-web"),
+		webPkg.WithPort(3000),
+	)
+	webModule = &web.WebModule{}
+
+	// CLI Platform Configuration
+	cliPlatform = cliPkg.NewPlatform(
+		cliPkg.WithName("{{.AppNameLower}}-cli"),
+	)
+	cliModule = &cli.CliModule{}
+
+	// Shared initializers - register common services across all platforms
+	sharedInitializers = []func(container types.Container) error{
+		func(container types.Container) error {
+			return container.Register(
+				func() types.Log {
+					return log.NewLog(
+						log.AppLogChannel("std"),
+						log.NewLogger(
+							[]types.Modifier{
+								modifiers.NewUUID(),
+								modifiers.NewColorTagsModifier(),
+								modifiers.NewSystemInfo(),
+								modifiers.NewStackTrace(),
+							},
+							formatters.NewSyslog("{{.AppNameLower}}", os.Getpid()),
+							processors.NewConsole(),
+						),
+					)
+				},
+				"",
+				true,
+			)
+		},
+	}
+)

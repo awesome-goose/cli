@@ -1,0 +1,38 @@
+package cli
+
+import (
+	"fmt"
+
+	"{{.ModulePath}}/app/shared"
+	"github.com/awesome-goose/goose/output"
+	"github.com/awesome-goose/goose/types"
+)
+
+// CliController handles CLI commands
+type CliController struct {
+	Service       *CliService
+	SharedService *shared.SharedService
+}
+
+type InfoInput struct{}
+
+func (c *CliController) Info(input *InfoInput) types.Output {
+	info := c.SharedService.GetAppInfo()
+	fmt.Printf("Application: %s\n", info["name"])
+	fmt.Printf("Version: %s\n", info["version"])
+	return output.Console("")
+}
+
+type HelpInput struct{}
+
+func (c *CliController) Help(input *HelpInput) types.Output {
+	c.Service.PrintInfo()
+	return output.Console("")
+}
+
+type VersionInput struct{}
+
+func (c *CliController) Version(input *VersionInput) types.Output {
+	fmt.Printf("Version: %s\n", c.Service.GetVersion())
+	return output.Console("")
+}

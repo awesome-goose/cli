@@ -1,0 +1,26 @@
+package api
+
+import (
+	"{{.ModulePath}}/app/shared"
+	"github.com/awesome-goose/goose/types"
+)
+
+// ApiModule is the root module for the API platform
+type ApiModule struct{}
+
+func (m *ApiModule) Imports() []types.Module {
+	return []types.Module{
+		&shared.SharedModule{},
+		API_ROUTES,
+	}
+}
+
+func (m *ApiModule) Exports() []any {
+	return []any{}
+}
+
+func (m *ApiModule) Declarations() []any {
+	return []any{
+		&ApiService{},
+	}
+}

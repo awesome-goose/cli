@@ -1,0 +1,26 @@
+package cli
+
+import (
+	"{{.ModulePath}}/app/shared"
+	"github.com/awesome-goose/goose/types"
+)
+
+// CliModule is the root module for the CLI platform
+type CliModule struct{}
+
+func (m *CliModule) Imports() []types.Module {
+	return []types.Module{
+		&shared.SharedModule{},
+		CLI_ROUTES,
+	}
+}
+
+func (m *CliModule) Exports() []any {
+	return []any{}
+}
+
+func (m *CliModule) Declarations() []any {
+	return []any{
+		&CliService{},
+	}
+}

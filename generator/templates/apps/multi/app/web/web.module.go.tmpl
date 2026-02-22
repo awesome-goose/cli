@@ -1,0 +1,26 @@
+package web
+
+import (
+	"{{.ModulePath}}/app/shared"
+	"github.com/awesome-goose/goose/types"
+)
+
+// WebModule is the root module for the Web platform
+type WebModule struct{}
+
+func (m *WebModule) Imports() []types.Module {
+	return []types.Module{
+		&shared.SharedModule{},
+		WEB_ROUTES,
+	}
+}
+
+func (m *WebModule) Exports() []any {
+	return []any{}
+}
+
+func (m *WebModule) Declarations() []any {
+	return []any{
+		&WebService{},
+	}
+}

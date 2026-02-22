@@ -15,9 +15,7 @@ import (
 
 func main() {
 	stop, err := goose.Start(
-		webPlatform,
-		rootModule,
-		initializers,
+		goose.Web(webPlatform, rootModule, initializers),
 	)
 	if err != nil {
 		panic(err)

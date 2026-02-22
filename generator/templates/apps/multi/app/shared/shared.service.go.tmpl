@@ -1,0 +1,18 @@
+package shared
+
+// SharedService provides business logic shared across all platforms
+type SharedService struct{}
+
+func (s *SharedService) GetAppInfo() map[string]any {
+	return map[string]any{
+		"name":    "{{.AppNameLower}}",
+		"version": "1.0.0",
+	}
+}
+
+func (s *SharedService) FormatResponse(data any) map[string]any {
+	return map[string]any{
+		"success": true,
+		"data":    data,
+	}
+}

@@ -1,0 +1,23 @@
+package web
+
+import (
+	"github.com/awesome-goose/goose/output"
+	"github.com/awesome-goose/goose/types"
+)
+
+// WebController handles Web requests
+type WebController struct {
+	Service *WebService
+}
+
+type WebStatusInput struct{}
+
+func (c *WebController) Status(input *WebStatusInput) types.Output {
+	return output.JSON(c.Service.GetStatus())
+}
+
+type WebHomeInput struct{}
+
+func (c *WebController) Home(input *WebHomeInput) types.Output {
+	return output.HTML("<html><body><h1>Welcome to {{.AppName}}</h1><p>Web Server Running</p></body></html>")
+}
