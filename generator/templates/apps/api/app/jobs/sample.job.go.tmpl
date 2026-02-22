@@ -1,0 +1,28 @@
+package jobs
+
+import (
+	"github.com/awesome-goose/goose/types"
+)
+
+// SampleJob demonstrates how to create a background job
+// Jobs can be dispatched to queues and processed asynchronously
+type SampleJob struct {
+	log types.Log `inject:""`
+}
+
+// Handle executes the job logic
+func (j *SampleJob) Handle(payload *SampleJobPayload) error {
+	j.log.Info("SampleJob: Processing job", map[string]any{
+		"data": payload.Data,
+	})
+
+	// Add your job logic here
+	// This runs asynchronously when dispatched to a queue
+
+	return nil
+}
+
+// SampleJobPayload defines the data structure for the job
+type SampleJobPayload struct {
+	Data string `json:"data"`
+}

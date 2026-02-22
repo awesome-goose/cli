@@ -1,0 +1,49 @@
+package {{.ModuleNameLower}}
+
+import (
+	"fmt"
+
+	"github.com/awesome-goose/goose/output"
+	"github.com/awesome-goose/goose/types"
+)
+
+type {{.ModuleName}}Controller struct {
+	{{.ModuleNameLower}}Service *{{.ModuleName}}Service `inject:""`
+	log                         types.Log               `inject:""`
+}
+
+func (c *{{.ModuleName}}Controller) List(body *ListDto) types.Output {
+	c.log.Info("{{.ModuleName}}Controller: List called")
+	items := c.{{.ModuleNameLower}}Service.List()
+	
+	rows := make([][]string, len(items))
+	for i, item := range items {
+		rows[i] = []string{fmt.Sprint(item.ID), item.Name}
+	}
+	
+	return output.Table(
+		[]string{"ID", "Name"},
+		rows,
+	)
+}
+
+func (c *{{.ModuleName}}Controller) Get(body *GetDto) types.Output {
+	c.log.Info("{{.ModuleName}}Controller: Get called")
+	item := c.{{.ModuleNameLower}}Service.Get(body.ID)
+	return output.Box("{{.ModuleName}} Details", []string{
+		fmt.Sprintf("ID: %d", item.ID),
+		fmt.Sprintf("Name: %s", item.Name),
+	})
+}
+
+func (c *{{.ModuleName}}Controller) Create(body *CreateDto) types.Output {
+	c.log.Info("{{.ModuleName}}Controller: Create called")
+	item := c.{{.ModuleNameLower}}Service.Create(body.Name)
+	return output.ConsoleSuccess(fmt.Sprintf("{{.ModuleName}} created: %s", item.Name))
+}
+
+func (c *{{.ModuleName}}Controller) Delete(body *DeleteDto) types.Output {
+	c.log.Info("{{.ModuleName}}Controller: Delete called")
+	c.{{.ModuleNameLower}}Service.Delete(body.ID)
+	return output.ConsoleSuccess(fmt.Sprintf("{{.ModuleName}} deleted: %s", body.ID))
+}

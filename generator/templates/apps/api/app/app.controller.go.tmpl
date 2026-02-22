@@ -1,0 +1,28 @@
+package app
+
+import (
+	"github.com/awesome-goose/goose/output"
+	"github.com/awesome-goose/goose/types"
+)
+
+type AppController struct {
+	appService *AppService `inject:""`
+	log        types.Log   `inject:""`
+}
+
+func (c *AppController) Health(body *HealthDto) types.Output {
+	c.log.Info("AppController: Health check called", body)
+	status := c.appService.Health()
+	return output.JSON(map[string]any{
+		"status": status,
+		"query":  body.Type,
+	})
+}
+
+func (c *AppController) Version(body *VersionDto) types.Output {
+	c.log.Info("AppController: Version called")
+	return output.JSON(map[string]any{
+		"name":    "{{.AppName}}",
+		"version": "1.0.0",
+	})
+}

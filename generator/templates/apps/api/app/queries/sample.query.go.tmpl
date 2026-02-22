@@ -1,0 +1,46 @@
+package queries
+
+import (
+	"github.com/awesome-goose/goose/modules/sql"
+)
+
+// SampleQuery demonstrates how to create reusable database queries
+// Queries encapsulate complex SQL operations for better organization
+type SampleQuery struct {
+	db *sql.DB `inject:""`
+}
+
+// Execute runs the sample query
+func (q *SampleQuery) Execute(params *SampleQueryParams) ([]map[string]any, error) {
+	// Example raw SQL query
+	// Modify according to your needs
+	query := `
+		SELECT * 
+		FROM your_table 
+		WHERE status = $1 
+		LIMIT $2
+	`
+
+	rows, err := q.db.Raw(query, params.Status, params.Limit).Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []map[string]any
+	for rows.Next() {
+		var row map[string]any
+		if err := q.db.ScanRows(rows, &row); err != nil {
+			return nil, err
+		}
+		results = append(results, row)
+	}
+
+	return results, nil
+}
+
+// SampleQueryParams defines parameters for the query
+type SampleQueryParams struct {
+	Status string
+	Limit  int
+}

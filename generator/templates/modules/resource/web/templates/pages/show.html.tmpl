@@ -1,0 +1,19 @@
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>{{.ModuleName}} Details</h1>
+        <a href="/{{.ModuleNameLower}}" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+        <div>
+            <p style="color: #6c757d; font-size: 14px; margin-bottom: 4px;">Name</p>
+            <p style="font-size: 18px; font-weight: 500;">{{`{{.Item.Name}}`}}</p>
+        </div>
+        {{`{{if .Item.ID}}`}}
+        <div>
+            <p style="color: #6c757d; font-size: 14px; margin-bottom: 4px;">ID</p>
+            <p style="font-size: 18px; font-weight: 500;">{{`{{.Item.ID}}`}}</p>
+        </div>
+        {{`{{end}}`}}
+    </div>
+</div>

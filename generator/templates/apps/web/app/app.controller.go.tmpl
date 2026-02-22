@@ -1,0 +1,23 @@
+package app
+
+import (
+	"github.com/awesome-goose/goose/output"
+	"github.com/awesome-goose/goose/types"
+)
+
+type AppController struct {
+	appService *AppService `inject:""`
+	log        types.Log   `inject:""`
+}
+
+func (c *AppController) Health(body *HealthDto) types.Output {
+	c.log.Info("AppController: Health check called", body)
+	status := c.appService.Health()
+
+	return output.View("pages/home.html", map[string]any{
+		"Title":  "Home",
+		"Status": status,
+		"Query":  body.Type,
+		"Year":   2026,
+	})
+}

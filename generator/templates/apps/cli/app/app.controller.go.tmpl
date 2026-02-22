@@ -1,0 +1,30 @@
+package app
+
+import (
+	"fmt"
+
+	"github.com/awesome-goose/goose/output"
+	"github.com/awesome-goose/goose/types"
+)
+
+type AppController struct {
+	appService *AppService `inject:""`
+	log        types.Log   `inject:""`
+}
+
+func (c *AppController) Health(body *HealthDto) types.Output {
+	c.log.Info("AppController: Health check called", body)
+	status := c.appService.Health()
+	if body.Type != "" {
+		return output.ConsoleSuccess(fmt.Sprintf("%s (query: %s)", status, body.Type))
+	}
+	return output.ConsoleSuccess(status)
+}
+
+func (c *AppController) Version(body *VersionDto) types.Output {
+	c.log.Info("AppController: Version called")
+	return output.Box("{{.AppName}}", []string{
+		"Version: 1.0.0",
+		"Built with Goose Framework",
+	})
+}

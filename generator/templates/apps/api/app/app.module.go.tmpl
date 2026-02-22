@@ -1,0 +1,42 @@
+package app
+
+import (
+	"github.com/awesome-goose/goose/modules/sql"
+	"github.com/awesome-goose/goose/types"
+)
+
+type AppModule struct{}
+
+func (m *AppModule) Imports() []types.Module {
+	return []types.Module{
+		// Database configuration - modify credentials as needed
+		sql.Root(&sql.Config{
+			Dialect:  "postgres",
+			Host:     "127.0.0.1",
+			Port:     5432,
+			User:     "root",
+			Pass:     "password",
+			Name:     "{{.AppNameSnake}}",
+			Sync:     true,
+			Log:      true,
+			SSLMode:  "disable",
+			Schema:   "public",
+			TimeZone: "UTC",
+		}),
+
+		// Register your modules here
+		// &yourmodule.YourModule{},
+
+		ROUTES,
+	}
+}
+
+func (m *AppModule) Exports() []any {
+	return []any{}
+}
+
+func (m *AppModule) Declarations() []any {
+	return []any{
+		&AppService{},
+	}
+}

@@ -1,0 +1,58 @@
+package main
+
+import (
+	"os"
+
+	"{{.ModulePath}}/app"
+	"github.com/awesome-goose/goose"
+	"github.com/awesome-goose/goose/log"
+	"github.com/awesome-goose/goose/log/formatters"
+	"github.com/awesome-goose/goose/log/modifiers"
+	"github.com/awesome-goose/goose/log/processors"
+	"github.com/awesome-goose/goose/platforms/api"
+	"github.com/awesome-goose/goose/types"
+)
+
+func main() {
+	stop, err := goose.Start(
+		apiPlatform,
+		rootModule,
+		initializers,
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	defer stop()
+}
+
+var (
+	apiPlatform = api.NewPlatform(
+		api.WithName("{{.AppName}}"),
+		api.WithPort(8080),
+	)
+	rootModule   = &app.AppModule{}
+	initializers = []func(container types.Container) error{
+		func(container types.Container) error {
+			return container.Register(
+				func() types.Log {
+					return log.NewLog(
+						log.AppLogChannel("std"),
+						log.NewLogger(
+							[]types.Modifier{
+								modifiers.NewUUID(),
+								modifiers.NewColorTagsModifier(),
+								modifiers.NewSystemInfo(),
+								modifiers.NewStackTrace(),
+							},
+							formatters.NewSyslog("{{.AppName}}", os.Getpid()),
+							processors.NewConsole(),
+						),
+					)
+				},
+				"",
+				true,
+			)
+		},
+	}
+)

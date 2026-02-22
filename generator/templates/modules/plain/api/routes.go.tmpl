@@ -1,0 +1,9 @@
+package {{.ModuleNameLower}}
+
+import "github.com/awesome-goose/goose/modules/router"
+
+var (
+	ROUTES = router.ForRoutes(
+		router.Get("{{.ModuleNameLower}}", []any{  {{.ModuleName}}Controller{}, "Index"}),
+	)
+)

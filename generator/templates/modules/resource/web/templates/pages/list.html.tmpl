@@ -1,0 +1,31 @@
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>{{.ModuleName}}s</h1>
+        <a href="#" class="btn">Add {{.ModuleName}}</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{`{{range .Items}}`}}
+            <tr>
+                <td>{{`{{.Name}}`}}</td>
+                <td><span class="status-badge status-healthy">Active</span></td>
+                <td>
+                    <a href="/{{.ModuleNameLower}}/{{`{{.ID}}`}}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View</a>
+                </td>
+            </tr>
+            {{`{{else}}`}}
+            <tr>
+                <td colspan="3" style="text-align: center; color: #6c757d;">No items found</td>
+            </tr>
+            {{`{{end}}`}}
+        </tbody>
+    </table>
+</div>

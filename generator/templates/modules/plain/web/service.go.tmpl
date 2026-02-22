@@ -1,0 +1,9 @@
+package {{.ModuleNameLower}}
+
+type {{.ModuleName}}Service struct{}
+
+func (s *{{.ModuleName}}Service) GetData() map[string]any {
+	return map[string]any{
+		"message": "{{.ModuleName}} module is working",
+	}
+}

@@ -1,0 +1,17 @@
+package {{.ModuleNameLower}}
+
+import (
+	"github.com/awesome-goose/goose/output"
+	"github.com/awesome-goose/goose/types"
+)
+
+type {{.ModuleName}}Controller struct {
+	{{.ModuleNameLower}}Service *{{.ModuleName}}Service `inject:""`
+	log                         types.Log               `inject:""`
+}
+
+func (c *{{.ModuleName}}Controller) Run(body *RunDto) types.Output {
+	c.log.Info("{{.ModuleName}}Controller: Run called")
+	result := c.{{.ModuleNameLower}}Service.Execute()
+	return output.ConsoleSuccess(result)
+}

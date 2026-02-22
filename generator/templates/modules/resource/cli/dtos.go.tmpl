@@ -1,0 +1,17 @@
+package {{.ModuleNameLower}}
+
+type ListDto struct {
+	Verbose bool `flag:"verbose,v" description:"Enable verbose output"`
+}
+
+type GetDto struct {
+	ID string `param:"id"`
+}
+
+type CreateDto struct {
+	Name string `flag:"name,n" description:"Name of the {{.ModuleNameLower}}" required:"true"`
+}
+
+type DeleteDto struct {
+	ID string `param:"id"`
+}

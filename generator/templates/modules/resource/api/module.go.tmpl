@@ -1,0 +1,22 @@
+package {{.ModuleNameLower}}
+
+import "github.com/awesome-goose/goose/types"
+
+type {{.ModuleName}}Module struct{}
+
+func (m *{{.ModuleName}}Module) Imports() []types.Module {
+	return []types.Module{
+		ROUTES,
+	}
+}
+
+func (m *{{.ModuleName}}Module) Exports() []any {
+	return []any{}
+}
+
+func (m *{{.ModuleName}}Module) Declarations() []any {
+	return []any{
+		&{{.ModuleName}}Service{},
+		&{{.ModuleName}}Entity{},
+	}
+}

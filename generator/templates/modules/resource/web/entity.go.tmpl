@@ -1,0 +1,13 @@
+package {{.ModuleNameLower}}
+
+import "github.com/awesome-goose/goose/modules/sql"
+
+type {{.ModuleName}} struct {
+	sql.BaseEntity
+
+	Name string `json:"name"`
+}
+
+type {{.ModuleName}}Entity struct {
+	*sql.Entity[{{.ModuleName}}]
+}

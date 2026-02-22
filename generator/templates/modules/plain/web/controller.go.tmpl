@@ -1,0 +1,22 @@
+package {{.ModuleNameLower}}
+
+import (
+	"github.com/awesome-goose/goose/output"
+	"github.com/awesome-goose/goose/types"
+)
+
+type {{.ModuleName}}Controller struct {
+	{{.ModuleNameLower}}Service *{{.ModuleName}}Service `inject:""`
+	log                         types.Log               `inject:""`
+}
+
+func (c *{{.ModuleName}}Controller) Index(body *IndexDto) types.Output {
+	c.log.Info("{{.ModuleName}}Controller: Index called")
+	data := c.{{.ModuleNameLower}}Service.GetData()
+	
+	return output.View("pages/index.html", map[string]any{
+		"Title": "{{.ModuleName}}",
+		"Data":  data,
+		"Year":  2026,
+	}, output.WithBaseDir("app/{{.ModuleNameLower}}/templates"))
+}

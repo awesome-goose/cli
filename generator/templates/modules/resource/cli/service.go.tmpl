@@ -1,0 +1,32 @@
+package {{.ModuleNameLower}}
+
+type {{.ModuleName}} struct {
+	ID   int
+	Name string
+}
+
+type {{.ModuleName}}Service struct{}
+
+func (s *{{.ModuleName}}Service) List() []*{{.ModuleName}} {
+	return []*{{.ModuleName}}{
+		{ID: 1, Name: "Sample {{.ModuleName}}"},
+	}
+}
+
+func (s *{{.ModuleName}}Service) Get(id string) *{{.ModuleName}} {
+	return &{{.ModuleName}}{
+		ID:   1,
+		Name: "Sample {{.ModuleName}}",
+	}
+}
+
+func (s *{{.ModuleName}}Service) Create(name string) *{{.ModuleName}} {
+	return &{{.ModuleName}}{
+		ID:   1,
+		Name: name,
+	}
+}
+
+func (s *{{.ModuleName}}Service) Delete(id string) {
+	// TODO: Implement deletion logic
+}

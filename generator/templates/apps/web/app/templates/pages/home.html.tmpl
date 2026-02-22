@@ -1,0 +1,21 @@
+<div class="card">
+    <h1>Welcome to {{.AppName}}</h1>
+    <p>A powerful, modular web framework built with Go.</p>
+</div>
+
+<div class="card">
+    <h2>System Status</h2>
+    <p>
+        <span class="status-badge status-healthy">{{`{{.Status}}`}}</span>
+    </p>
+    {{`{{if .Query}}`}}
+    <p><strong>Query:</strong> {{`{{.Query}}`}}</p>
+    {{`{{end}}`}}
+</div>
+
+<div class="card">
+    <h2>Quick Links</h2>
+    <p>
+        <a href="/" class="btn">Home</a>
+    </p>
+</div>
