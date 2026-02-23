@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/awesome-goose/goose/output"
+	"github.com/awesome-goose/goose/io/output"
 	"github.com/awesome-goose/goose/types"
 )
 
