@@ -1,6 +1,8 @@
 package {{.ModuleNameLower}}
 
-import "github.com/awesome-goose/goose/modules/sql"
+import (
+	"github.com/awesome-goose/goose/modules/sql"
+)
 
 type {{.ModuleName}} struct {
 	sql.BaseEntity
@@ -9,5 +11,18 @@ type {{.ModuleName}} struct {
 }
 
 type {{.ModuleName}}Entity struct {
-	*sql.Entity[{{.ModuleName}}]
+	*sql.Entity[{{.ModuleName}}] `inject:""`
+}
+
+func (e *{{.ModuleName}}Entity) OnRegister() {
+	e.Hydrate(
+		"{{.ModuleNameLower}}",
+		[]string{},
+		[]string{},
+		nil,
+		nil,
+		nil,
+		nil,
+		"",
+	)
 }

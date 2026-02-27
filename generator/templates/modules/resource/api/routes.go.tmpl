@@ -4,6 +4,6 @@ import "github.com/awesome-goose/goose/modules/router"
 
 var (
 	ROUTES = router.ForRoutes(
-		router.Resource("{{.ModuleNameLower}}", {{.ModuleName}}Controller{}),
+		router.Resource("{{.ModuleNameLower}}", {{.ModuleName}}Controller{}).Only("Get", "List"),
 	)
 )

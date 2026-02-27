@@ -3,35 +3,3 @@ package {{.ModuleNameLower}}
 type {{.ModuleName}}Service struct {
 	{{.ModuleNameLower}}Entity *{{.ModuleName}}Entity `inject:""`
 }
-
-func (s *{{.ModuleName}}Service) Create(data *CreateDto) *{{.ModuleName}} {
-	// TODO: Implement actual database creation
-	return &{{.ModuleName}}{
-		Name: data.Name,
-	}
-}
-
-func (s *{{.ModuleName}}Service) List() []*{{.ModuleName}} {
-	// TODO: Implement actual database query
-	return []*{{.ModuleName}}{
-		{Name: "Sample {{.ModuleName}}"},
-	}
-}
-
-func (s *{{.ModuleName}}Service) Get(id string) *{{.ModuleName}} {
-	// TODO: Implement actual database query
-	return &{{.ModuleName}}{
-		Name: "Sample {{.ModuleName}}",
-	}
-}
-
-func (s *{{.ModuleName}}Service) Update(data *UpdateDto) *{{.ModuleName}} {
-	// TODO: Implement actual database update
-	return &{{.ModuleName}}{
-		Name: data.Name,
-	}
-}
-
-func (s *{{.ModuleName}}Service) Delete(id string) {
-	// TODO: Implement actual database deletion
-}

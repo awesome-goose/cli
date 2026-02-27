@@ -1,23 +1,9 @@
 package {{.ModuleNameLower}}
 
-type CreateDto struct {
-	Name string `json:"name" validate:"required"`
+type GetDto struct {
+	Type string `query:"type"`
 }
 
 type ListDto struct {
-	Page  int `query:"page"`
-	Limit int `query:"limit"`
-}
-
-type GetDto struct {
-	ID string `param:"id" validate:"required"`
-}
-
-type UpdateDto struct {
-	ID   string `param:"id" validate:"required"`
-	Name string `json:"name"`
-}
-
-type DeleteDto struct {
-	ID string `param:"id" validate:"required"`
+	Type string `query:"type"`
 }

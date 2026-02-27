@@ -1,39 +1,17 @@
 package {{.ModuleNameLower}}
 
 import (
-	"github.com/awesome-goose/goose/io/output"
-	"github.com/awesome-goose/goose/types"
+	"github.com/awesome-goose/goose/io/resources/api"
 )
 
 type {{.ModuleName}}Controller struct {
-	{{.ModuleNameLower}}Service *{{.ModuleName}}Service `inject:""`
-	log                         types.Log               `inject:""`
+	*api.Resource[{{.ModuleName}}] `inject:""`
+
+	entity *{{.ModuleName}}Entity `inject:""`
 }
 
-func (c *{{.ModuleName}}Controller) Create(body *CreateDto) types.Output {
-	c.log.Info("{{.ModuleName}}Controller: Create called")
-	result := c.{{.ModuleNameLower}}Service.Create(body)
-	return output.JSON(result)
-}
-
-func (c *{{.ModuleName}}Controller) List(body *ListDto) types.Output {
-	c.log.Info("{{.ModuleName}}Controller: List called")
-	return output.JSON(c.{{.ModuleNameLower}}Service.List())
-}
-
-func (c *{{.ModuleName}}Controller) Get(body *GetDto) types.Output {
-	c.log.Info("{{.ModuleName}}Controller: Get called")
-	return output.JSON(c.{{.ModuleNameLower}}Service.Get(body.ID))
-}
-
-func (c *{{.ModuleName}}Controller) Update(body *UpdateDto) types.Output {
-	c.log.Info("{{.ModuleName}}Controller: Update called")
-	result := c.{{.ModuleNameLower}}Service.Update(body)
-	return output.JSON(result)
-}
-
-func (c *{{.ModuleName}}Controller) Delete(body *DeleteDto) types.Output {
-	c.log.Info("{{.ModuleName}}Controller: Delete called")
-	c.{{.ModuleNameLower}}Service.Delete(body.ID)
-	return output.JSON(map[string]any{"deleted": true})
+func (c *{{.ModuleName}}Controller) OnRegister() {
+	c.Hydrate(
+		c.entity,
+	)
 }
