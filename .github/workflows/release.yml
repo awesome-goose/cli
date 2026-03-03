@@ -129,10 +129,10 @@ jobs:
 
             Download the appropriate archive for your operating system and architecture below.
 
-            #### Linux / macOS
+            #### Linux
 
             ```bash
-            # Download (replace with your OS and architecture)
+            # Download (replace architecture as needed: amd64, arm64, 386, arm)
             curl -LO https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.VERSION }}/goose-${{ steps.version.outputs.VERSION }}-linux-amd64.tar.gz
 
             # Extract
@@ -151,8 +151,28 @@ jobs:
             - `linux-arm64` - Linux ARM 64-bit
             - `linux-386` - Linux 32-bit
             - `linux-arm` - Linux ARM 32-bit
-            - `darwin-amd64` - macOS Intel
-            - `darwin-arm64` - macOS Apple Silicon
+
+            #### macOS
+
+            **Apple Silicon (M1/M2/M3):**
+            ```bash
+            curl -LO https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.VERSION }}/goose-${{ steps.version.outputs.VERSION }}-darwin-arm64.tar.gz
+            tar -xzf goose-${{ steps.version.outputs.VERSION }}-darwin-arm64.tar.gz
+            chmod +x goose-${{ steps.version.outputs.VERSION }}-darwin-arm64
+            sudo mv goose-${{ steps.version.outputs.VERSION }}-darwin-arm64 /usr/local/bin/goose
+            goose --version
+            ```
+
+            **Intel Mac:**
+            ```bash
+            curl -LO https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.VERSION }}/goose-${{ steps.version.outputs.VERSION }}-darwin-amd64.tar.gz
+            tar -xzf goose-${{ steps.version.outputs.VERSION }}-darwin-amd64.tar.gz
+            chmod +x goose-${{ steps.version.outputs.VERSION }}-darwin-amd64
+            sudo mv goose-${{ steps.version.outputs.VERSION }}-darwin-amd64 /usr/local/bin/goose
+            goose --version
+            ```
+
+            > **Tip:** Run `uname -m` to check your architecture. `arm64` = Apple Silicon, `x86_64` = Intel.
 
             #### Windows
 
