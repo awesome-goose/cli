@@ -127,13 +127,72 @@ jobs:
 
             ### Installation
 
-            Download the appropriate archive for your operating system and architecture, then extract and install.
+            Download the appropriate archive for your operating system and architecture below.
 
-            See [INSTALL.md](https://github.com/${{ github.repository }}/blob/main/INSTALL.md) for detailed installation instructions.
+            #### Linux / macOS
+
+            ```bash
+            # Download (replace with your OS and architecture)
+            curl -LO https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.VERSION }}/goose-${{ steps.version.outputs.VERSION }}-linux-amd64.tar.gz
+
+            # Extract
+            tar -xzf goose-${{ steps.version.outputs.VERSION }}-linux-amd64.tar.gz
+
+            # Make executable and move to PATH
+            chmod +x goose-${{ steps.version.outputs.VERSION }}-linux-amd64
+            sudo mv goose-${{ steps.version.outputs.VERSION }}-linux-amd64 /usr/local/bin/goose
+
+            # Verify installation
+            goose --version
+            ```
+
+            **Available archives:**
+            - `linux-amd64` - Linux 64-bit
+            - `linux-arm64` - Linux ARM 64-bit
+            - `linux-386` - Linux 32-bit
+            - `linux-arm` - Linux ARM 32-bit
+            - `darwin-amd64` - macOS Intel
+            - `darwin-arm64` - macOS Apple Silicon
+
+            #### Windows
+
+            1. Download the `.zip` file for your architecture
+            2. Extract the archive
+            3. Move `goose.exe` to a directory in your PATH (e.g., `C:\Program Files\goose\`)
+            4. Add to PATH via System Properties → Environment Variables
+
+            Or via PowerShell:
+            ```powershell
+            # Download
+            Invoke-WebRequest -Uri "https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.VERSION }}/goose-${{ steps.version.outputs.VERSION }}-windows-amd64.zip" -OutFile "goose.zip"
+
+            # Extract
+            Expand-Archive -Path "goose.zip" -DestinationPath "."
+
+            # Move to Program Files (run as Administrator)
+            New-Item -ItemType Directory -Force -Path "C:\Program Files\goose"
+            Move-Item "goose-${{ steps.version.outputs.VERSION }}-windows-amd64.exe" "C:\Program Files\goose\goose.exe"
+
+            # Add to PATH (requires restart or new terminal)
+            [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\goose", "Machine")
+            ```
+
+            **Available archives:**
+            - `windows-amd64` - Windows 64-bit
+            - `windows-arm64` - Windows ARM 64-bit
+            - `windows-386` - Windows 32-bit
 
             ### Checksums
 
-            SHA256 checksums are available in `checksums.txt`.
+            SHA256 checksums are available in `checksums.txt`. Verify your download:
+
+            ```bash
+            # Linux/macOS
+            sha256sum -c checksums.txt --ignore-missing
+
+            # Windows PowerShell
+            (Get-FileHash goose.zip -Algorithm SHA256).Hash
+            ```
 
           files: |
             dist/*
