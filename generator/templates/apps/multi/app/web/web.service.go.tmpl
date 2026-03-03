@@ -7,6 +7,6 @@ func (s *WebService) GetStatus() map[string]any {
 	return map[string]any{
 		"platform": "web",
 		"status":   "running",
-		"version":  "1.0.0",
+		"version":  "0.0.0",
 	}
 }

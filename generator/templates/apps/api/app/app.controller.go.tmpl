@@ -11,7 +11,6 @@ type AppController struct {
 }
 
 func (c *AppController) Health(body *HealthDto) types.Output {
-	c.log.Info("AppController: Health check called", body)
 	status := c.appService.Health()
 	return output.JSON(map[string]any{
 		"status": status,
@@ -20,9 +19,8 @@ func (c *AppController) Health(body *HealthDto) types.Output {
 }
 
 func (c *AppController) Version(body *VersionDto) types.Output {
-	c.log.Info("AppController: Version called")
 	return output.JSON(map[string]any{
 		"name":    "{{.AppName}}",
-		"version": "1.0.0",
+		"version": "0.0.0",
 	})
 }

@@ -7,6 +7,6 @@ func (s *ApiService) GetStatus() map[string]any {
 	return map[string]any{
 		"platform": "api",
 		"status":   "running",
-		"version":  "1.0.0",
+		"version":  "0.0.0",
 	}
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/awesome-goose/goose/types"
 )
 
-const VERSION = "1.0.0"
+const VERSION = "0.0.0"
 
 func main() {
 	stop, err := goose.Start(

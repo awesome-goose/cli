@@ -13,7 +13,6 @@ type AppController struct {
 }
 
 func (c *AppController) Health(body *HealthDto) types.Output {
-	c.log.Info("AppController: Health check called", body)
 	status := c.appService.Health()
 	if body.Type != "" {
 		return output.ConsoleSuccess(fmt.Sprintf("%s (flag: %s)", status, body.Type))
@@ -22,9 +21,8 @@ func (c *AppController) Health(body *HealthDto) types.Output {
 }
 
 func (c *AppController) Version(body *VersionDto) types.Output {
-	c.log.Info("AppController: Version called")
 	return output.Box("{{.AppName}}", []string{
-		"Version: 1.0.0",
+		"Version: 0.0.0",
 		"Built with Goose Framework",
 	})
 }

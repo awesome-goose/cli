@@ -14,7 +14,6 @@ type AppController struct {
 
 // Version shows CLI version information
 func (c *AppController) Version(body *VersionDto) types.Output {
-	c.log.Info("AppController: Version called")
 	return output.Box("Goose CLI", []string{
 		fmt.Sprintf("Version: %s", c.appService.GetVersion()),
 		"A tool for scaffolding Goose applications",
@@ -34,12 +33,6 @@ func (c *AppController) Version(body *VersionDto) types.Output {
 
 // App creates a new Goose application
 func (c *AppController) App(body *AppDto) types.Output {
-	c.log.Info("AppController: App called", map[string]any{
-		"name":     body.Name,
-		"template": body.Template,
-		"path":     body.Path,
-	})
-
 	// Validate inputs
 	if body.Name == "" {
 		return output.ConsoleError("Error: --name flag is required")
