@@ -1,3 +1,5 @@
+github.com/awesome-goose/goose v0.0.0 h1:JMEb11kl37RB/Pw2cx8TgCXGPhqNuVM9V651s3g0scI=
+github.com/awesome-goose/goose v0.0.0/go.mod h1:XFMUc3cjDRDt03djiM9DocIUUIAz7S4oAF30JhF1Erc=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
