@@ -1,0 +1,45 @@
+package tests
+
+import (
+	"testing"
+
+	apiapp "{{.ModulePath}}/app/api"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestApiService(t *testing.T) {
+	test.NewSuiteRunner(t, &ApiServiceSuite{}).Run()
+}
+
+type ApiServiceSuite struct {
+	test.Suite
+	service *apiapp.ApiService
+}
+
+func (s *ApiServiceSuite) SetupTest() {
+	s.service = &apiapp.ApiService{}
+}
+
+func (s *ApiServiceSuite) TestGetStatus_ReturnsMap() {
+	result := s.service.GetStatus()
+	s.T.Expect(result).Not().ToBeNil()
+}
+
+func (s *ApiServiceSuite) TestGetStatus_HasPlatform() {
+	result := s.service.GetStatus()
+	s.T.Expect(result["platform"]).ToEqual("api")
+}
+
+func (s *ApiServiceSuite) TestGetStatus_HasStatus() {
+	result := s.service.GetStatus()
+	s.T.Expect(result["status"]).ToEqual("running")
+}
+
+func (s *ApiServiceSuite) TestGetStatus_HasVersion() {
+	result := s.service.GetStatus()
+	s.T.Expect(result["version"]).ToEqual("0.0.0")
+}
+
+func (s *ApiServiceSuite) TestService_NotNil() {
+	s.T.Expect(s.service).Not().ToBeNil()
+}

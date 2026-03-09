@@ -1,0 +1,92 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Dtos(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}DtosSuite{}).Run()
+}
+
+type {{.ModuleName}}DtosSuite struct {
+	test.Suite
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestCreateDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.CreateDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestCreateDto_NameEmpty() {
+	dto := &{{.ModuleNameLower}}.CreateDto{}
+	s.T.Expect(dto.Name).ToEqual("")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestCreateDto_NameValue() {
+	dto := &{{.ModuleNameLower}}.CreateDto{Name: "Test"}
+	s.T.Expect(dto.Name).ToEqual("Test")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestListDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.ListDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestListDto_PageDefault() {
+	dto := &{{.ModuleNameLower}}.ListDto{}
+	s.T.Expect(dto.Page).ToEqual(0)
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestListDto_PageValue() {
+	dto := &{{.ModuleNameLower}}.ListDto{Page: 5}
+	s.T.Expect(dto.Page).ToEqual(5)
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestListDto_LimitDefault() {
+	dto := &{{.ModuleNameLower}}.ListDto{}
+	s.T.Expect(dto.Limit).ToEqual(0)
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestListDto_LimitValue() {
+	dto := &{{.ModuleNameLower}}.ListDto{Limit: 20}
+	s.T.Expect(dto.Limit).ToEqual(20)
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestGetDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.GetDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestGetDto_IDEmpty() {
+	dto := &{{.ModuleNameLower}}.GetDto{}
+	s.T.Expect(dto.ID).ToEqual("")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestGetDto_IDValue() {
+	dto := &{{.ModuleNameLower}}.GetDto{ID: "123"}
+	s.T.Expect(dto.ID).ToEqual("123")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestUpdateDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.UpdateDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestUpdateDto_IDValue() {
+	dto := &{{.ModuleNameLower}}.UpdateDto{ID: "456", Name: "Updated"}
+	s.T.Expect(dto.ID).ToEqual("456")
+	s.T.Expect(dto.Name).ToEqual("Updated")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestDeleteDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.DeleteDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestDeleteDto_IDValue() {
+	dto := &{{.ModuleNameLower}}.DeleteDto{ID: "789"}
+	s.T.Expect(dto.ID).ToEqual("789")
+}

@@ -1,0 +1,48 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/cli"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestCliModule(t *testing.T) {
+	test.NewSuiteRunner(t, &CliModuleSuite{}).Run()
+}
+
+type CliModuleSuite struct {
+	test.Suite
+	module     *cli.CliModule
+	moduleTest *test.ModuleTest
+}
+
+func (s *CliModuleSuite) SetupTest() {
+	s.module = &cli.CliModule{}
+	container := test.NewTestContainer()
+	s.moduleTest = test.NewModuleTest(s.T.T(), s.module, container)
+}
+
+func (s *CliModuleSuite) TestModule_NotNil() {
+	s.T.Expect(s.module).Not().ToBeNil()
+}
+
+func (s *CliModuleSuite) TestModule_Imports() {
+	imports := s.moduleTest.TestImports()
+	s.T.Expect(imports).Not().ToBeNil()
+}
+
+func (s *CliModuleSuite) TestModule_HasImports() {
+	imports := s.moduleTest.TestImports()
+	s.T.Expect(len(imports) > 0).ToEqual(true)
+}
+
+func (s *CliModuleSuite) TestModule_Declarations() {
+	declarations := s.moduleTest.TestDeclarations()
+	s.T.Expect(declarations).Not().ToBeNil()
+}
+
+func (s *CliModuleSuite) TestModule_DeclaresService() {
+	declarations := s.moduleTest.TestDeclarations()
+	s.T.Expect(len(declarations) > 0).ToEqual(true)
+}

@@ -1,0 +1,61 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/shared"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestSharedService(t *testing.T) {
+	test.NewSuiteRunner(t, &SharedServiceSuite{}).Run()
+}
+
+type SharedServiceSuite struct {
+	test.Suite
+	service *shared.SharedService
+}
+
+func (s *SharedServiceSuite) SetupTest() {
+	s.service = &shared.SharedService{}
+}
+
+func (s *SharedServiceSuite) TestGetAppInfo_ReturnsMap() {
+	result := s.service.GetAppInfo()
+	s.T.Expect(result).Not().ToBeNil()
+}
+
+func (s *SharedServiceSuite) TestGetAppInfo_HasName() {
+	result := s.service.GetAppInfo()
+	s.T.Expect(result["name"]).ToEqual("{{.AppNameLower}}")
+}
+
+func (s *SharedServiceSuite) TestGetAppInfo_HasVersion() {
+	result := s.service.GetAppInfo()
+	s.T.Expect(result["version"]).ToEqual("0.0.0")
+}
+
+func (s *SharedServiceSuite) TestFormatResponse_ReturnsMap() {
+	result := s.service.FormatResponse("test")
+	s.T.Expect(result).Not().ToBeNil()
+}
+
+func (s *SharedServiceSuite) TestFormatResponse_HasSuccess() {
+	result := s.service.FormatResponse("data")
+	s.T.Expect(result["success"]).ToEqual(true)
+}
+
+func (s *SharedServiceSuite) TestFormatResponse_HasData() {
+	result := s.service.FormatResponse("mydata")
+	s.T.Expect(result["data"]).ToEqual("mydata")
+}
+
+func (s *SharedServiceSuite) TestFormatResponse_NilData() {
+	result := s.service.FormatResponse(nil)
+	s.T.Expect(result["success"]).ToEqual(true)
+}
+
+func (s *SharedServiceSuite) TestFormatResponse_IntData() {
+	result := s.service.FormatResponse(42)
+	s.T.Expect(result["data"]).ToEqual(42)
+}

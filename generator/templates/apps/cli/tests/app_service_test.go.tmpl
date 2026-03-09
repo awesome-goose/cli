@@ -1,0 +1,41 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestAppService(t *testing.T) {
+	test.NewSuiteRunner(t, &AppServiceSuite{}).Run()
+}
+
+type AppServiceSuite struct {
+	test.Suite
+	service *app.AppService
+}
+
+func (s *AppServiceSuite) SetupTest() {
+	s.service = &app.AppService{}
+}
+
+func (s *AppServiceSuite) TestHealth_ReturnsHealthyMessage() {
+	result := s.service.Health()
+	s.T.Expect(result).ToEqual("{{.AppName}} is healthy")
+}
+
+func (s *AppServiceSuite) TestHealth_NotEmpty() {
+	result := s.service.Health()
+	s.T.Expect(result).Not().ToBeEmpty()
+}
+
+func (s *AppServiceSuite) TestHealth_ContainsAppName() {
+	result := s.service.Health()
+	s.T.Expect(result).ToContainString("{{.AppName}}")
+}
+
+func (s *AppServiceSuite) TestHealth_ContainsHealthy() {
+	result := s.service.Health()
+	s.T.Expect(result).ToContainString("healthy")
+}

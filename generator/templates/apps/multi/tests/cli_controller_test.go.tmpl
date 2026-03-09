@@ -1,0 +1,34 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/cli"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestCliController(t *testing.T) {
+	test.NewSuiteRunner(t, &CliControllerSuite{}).Run()
+}
+
+type CliControllerSuite struct {
+	test.Suite
+	controller *cli.CliController
+	container  *test.TestContainer
+}
+
+func (s *CliControllerSuite) SetupTest() {
+	s.container = test.NewTestContainer()
+	s.container.Register(&cli.CliService{})
+	s.controller = &cli.CliController{}
+	s.container.Inject(s.controller)
+}
+
+func (s *CliControllerSuite) TestController_NotNil() {
+	s.T.Expect(s.controller).Not().ToBeNil()
+}
+
+func (s *CliControllerSuite) TestController_HasService() {
+	ct := test.NewControllerTest(s.T.T(), s.controller, s.container)
+	s.T.Expect(ct).Not().ToBeNil()
+}

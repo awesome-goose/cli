@@ -1,0 +1,50 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Routes(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}RoutesSuite{}).Run()
+}
+
+type {{.ModuleName}}RoutesSuite struct {
+	test.Suite
+	routeTest *test.RouteTest
+}
+
+func (s *{{.ModuleName}}RoutesSuite) SetupTest() {
+	s.routeTest = test.NewRouteTest(s.T.T(), {{.ModuleNameLower}}.ROUTES.Routes())
+}
+
+func (s *{{.ModuleName}}RoutesSuite) TestRoutes_NotNil() {
+	s.T.Expect(s.routeTest.Routes()).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}RoutesSuite) TestRoutes_HasRoutes() {
+	routes := s.routeTest.Routes()
+	s.T.Expect(len(routes) > 0).ToEqual(true)
+}
+
+func (s *{{.ModuleName}}RoutesSuite) TestRoutes_ListRouteExists() {
+	s.routeTest.TestRouteExists("GET", []string{"{{.ModuleNameLower}}"})
+}
+
+func (s *{{.ModuleName}}RoutesSuite) TestRoutes_GetRouteExists() {
+	s.routeTest.TestRouteExists("GET", []string{"{{.ModuleNameLower}}", ":id"})
+}
+
+func (s *{{.ModuleName}}RoutesSuite) TestRoutes_CreateRouteExists() {
+	s.routeTest.TestRouteExists("POST", []string{"{{.ModuleNameLower}}"})
+}
+
+func (s *{{.ModuleName}}RoutesSuite) TestRoutes_UpdateRouteExists() {
+	s.routeTest.TestRouteExists("PUT", []string{"{{.ModuleNameLower}}", ":id"})
+}
+
+func (s *{{.ModuleName}}RoutesSuite) TestRoutes_DeleteRouteExists() {
+	s.routeTest.TestRouteExists("DELETE", []string{"{{.ModuleNameLower}}", ":id"})
+}

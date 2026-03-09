@@ -1,0 +1,45 @@
+package tests
+
+import (
+	"testing"
+
+	webapp "{{.ModulePath}}/app/web"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestWebService(t *testing.T) {
+	test.NewSuiteRunner(t, &WebServiceSuite{}).Run()
+}
+
+type WebServiceSuite struct {
+	test.Suite
+	service *webapp.WebService
+}
+
+func (s *WebServiceSuite) SetupTest() {
+	s.service = &webapp.WebService{}
+}
+
+func (s *WebServiceSuite) TestGetStatus_ReturnsMap() {
+	result := s.service.GetStatus()
+	s.T.Expect(result).Not().ToBeNil()
+}
+
+func (s *WebServiceSuite) TestGetStatus_HasPlatform() {
+	result := s.service.GetStatus()
+	s.T.Expect(result["platform"]).ToEqual("web")
+}
+
+func (s *WebServiceSuite) TestGetStatus_HasStatus() {
+	result := s.service.GetStatus()
+	s.T.Expect(result["status"]).ToEqual("running")
+}
+
+func (s *WebServiceSuite) TestGetStatus_HasVersion() {
+	result := s.service.GetStatus()
+	s.T.Expect(result["version"]).ToEqual("0.0.0")
+}
+
+func (s *WebServiceSuite) TestService_NotNil() {
+	s.T.Expect(s.service).Not().ToBeNil()
+}

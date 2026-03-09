@@ -1,0 +1,46 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Dtos(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}DtosSuite{}).Run()
+}
+
+type {{.ModuleName}}DtosSuite struct {
+	test.Suite
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestGetDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.GetDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestGetDto_TypeEmpty() {
+	dto := &{{.ModuleNameLower}}.GetDto{}
+	s.T.Expect(dto.Type).ToEqual("")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestGetDto_TypeValue() {
+	dto := &{{.ModuleNameLower}}.GetDto{Type: "detailed"}
+	s.T.Expect(dto.Type).ToEqual("detailed")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestListDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.ListDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestListDto_TypeEmpty() {
+	dto := &{{.ModuleNameLower}}.ListDto{}
+	s.T.Expect(dto.Type).ToEqual("")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestListDto_TypeValue() {
+	dto := &{{.ModuleNameLower}}.ListDto{Type: "paginated"}
+	s.T.Expect(dto.Type).ToEqual("paginated")
+}

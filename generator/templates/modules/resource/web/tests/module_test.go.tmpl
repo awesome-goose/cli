@@ -1,0 +1,48 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Module(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}ModuleSuite{}).Run()
+}
+
+type {{.ModuleName}}ModuleSuite struct {
+	test.Suite
+	module     *{{.ModuleNameLower}}.{{.ModuleName}}Module
+	moduleTest *test.ModuleTest
+}
+
+func (s *{{.ModuleName}}ModuleSuite) SetupTest() {
+	s.module = &{{.ModuleNameLower}}.{{.ModuleName}}Module{}
+	container := test.NewTestContainer()
+	s.moduleTest = test.NewModuleTest(s.T.T(), s.module, container)
+}
+
+func (s *{{.ModuleName}}ModuleSuite) TestModule_NotNil() {
+	s.T.Expect(s.module).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}ModuleSuite) TestModule_Imports() {
+	imports := s.moduleTest.TestImports()
+	s.T.Expect(imports).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}ModuleSuite) TestModule_HasRoutes() {
+	imports := s.moduleTest.TestImports()
+	s.T.Expect(len(imports) > 0).ToEqual(true)
+}
+
+func (s *{{.ModuleName}}ModuleSuite) TestModule_Declarations() {
+	declarations := s.moduleTest.TestDeclarations()
+	s.T.Expect(declarations).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}ModuleSuite) TestModule_DeclaresServiceAndEntity() {
+	declarations := s.moduleTest.TestDeclarations()
+	s.T.Expect(len(declarations) >= 2).ToEqual(true)
+}

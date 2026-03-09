@@ -1,0 +1,71 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Dtos(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}DtosSuite{}).Run()
+}
+
+type {{.ModuleName}}DtosSuite struct {
+	test.Suite
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestListDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.ListDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestListDto_VerboseDefault() {
+	dto := &{{.ModuleNameLower}}.ListDto{}
+	s.T.Expect(dto.Verbose).ToEqual(false)
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestListDto_VerboseTrue() {
+	dto := &{{.ModuleNameLower}}.ListDto{Verbose: true}
+	s.T.Expect(dto.Verbose).ToEqual(true)
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestGetDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.GetDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestGetDto_IDEmpty() {
+	dto := &{{.ModuleNameLower}}.GetDto{}
+	s.T.Expect(dto.ID).ToEqual("")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestGetDto_IDValue() {
+	dto := &{{.ModuleNameLower}}.GetDto{ID: "123"}
+	s.T.Expect(dto.ID).ToEqual("123")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestCreateDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.CreateDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestCreateDto_NameEmpty() {
+	dto := &{{.ModuleNameLower}}.CreateDto{}
+	s.T.Expect(dto.Name).ToEqual("")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestCreateDto_NameValue() {
+	dto := &{{.ModuleNameLower}}.CreateDto{Name: "Test"}
+	s.T.Expect(dto.Name).ToEqual("Test")
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestDeleteDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.DeleteDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestDeleteDto_IDValue() {
+	dto := &{{.ModuleNameLower}}.DeleteDto{ID: "456"}
+	s.T.Expect(dto.ID).ToEqual("456")
+}

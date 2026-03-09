@@ -1,0 +1,31 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/web"
+	"github.com/awesome-goose/goose/testing"
+)
+
+func TestWebRoutes(t *testing.T) {
+	runner := testing.NewSuiteRunner(t, &testing.Suite{
+		Name: "WebRoutes",
+	})
+
+	runner.Run("should define WEB_ROUTES", func(t *testing.T) {
+		routes := web.WEB_ROUTES
+		if routes == nil {
+			t.Error("Expected WEB_ROUTES to be defined")
+		}
+	})
+
+	runner.Run("should have home route", func(t *testing.T) {
+		rt := testing.NewRouteTest(t, web.WEB_ROUTES)
+		rt.TestRouteExists("GET", []string{"/"})
+	})
+
+	runner.Run("should have status route", func(t *testing.T) {
+		rt := testing.NewRouteTest(t, web.WEB_ROUTES)
+		rt.TestRouteExists("GET", []string{"/status"})
+	})
+}

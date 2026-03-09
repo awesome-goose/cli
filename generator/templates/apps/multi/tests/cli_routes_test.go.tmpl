@@ -1,0 +1,42 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/cli"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestCliRoutes(t *testing.T) {
+	test.NewSuiteRunner(t, &CliRoutesSuite{}).Run()
+}
+
+type CliRoutesSuite struct {
+	test.Suite
+	routeTest *test.RouteTest
+}
+
+func (s *CliRoutesSuite) SetupTest() {
+	s.routeTest = test.NewRouteTest(s.T.T(), cli.CLI_ROUTES.Routes())
+}
+
+func (s *CliRoutesSuite) TestRoutes_NotNil() {
+	s.T.Expect(s.routeTest.Routes()).Not().ToBeNil()
+}
+
+func (s *CliRoutesSuite) TestRoutes_HasRoutes() {
+	routes := s.routeTest.Routes()
+	s.T.Expect(len(routes) > 0).ToEqual(true)
+}
+
+func (s *CliRoutesSuite) TestRoutes_InfoRouteExists() {
+	s.routeTest.TestRouteExists("CLI", []string{"info"})
+}
+
+func (s *CliRoutesSuite) TestRoutes_HelpRouteExists() {
+	s.routeTest.TestRouteExists("CLI", []string{"help"})
+}
+
+func (s *CliRoutesSuite) TestRoutes_VersionRouteExists() {
+	s.routeTest.TestRouteExists("CLI", []string{"version"})
+}

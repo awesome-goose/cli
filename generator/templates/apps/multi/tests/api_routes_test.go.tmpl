@@ -1,0 +1,38 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/api"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestApiRoutes(t *testing.T) {
+	test.NewSuiteRunner(t, &ApiRoutesSuite{}).Run()
+}
+
+type ApiRoutesSuite struct {
+	test.Suite
+	routeTest *test.RouteTest
+}
+
+func (s *ApiRoutesSuite) SetupTest() {
+	s.routeTest = test.NewRouteTest(s.T.T(), api.API_ROUTES.Routes())
+}
+
+func (s *ApiRoutesSuite) TestRoutes_NotNil() {
+	s.T.Expect(s.routeTest.Routes()).Not().ToBeNil()
+}
+
+func (s *ApiRoutesSuite) TestRoutes_HasRoutes() {
+	routes := s.routeTest.Routes()
+	s.T.Expect(len(routes) > 0).ToEqual(true)
+}
+
+func (s *ApiRoutesSuite) TestRoutes_StatusRouteExists() {
+	s.routeTest.TestRouteExists("GET", []string{"api", "status"})
+}
+
+func (s *ApiRoutesSuite) TestRoutes_HealthRouteExists() {
+	s.routeTest.TestRouteExists("GET", []string{"api", "health"})
+}

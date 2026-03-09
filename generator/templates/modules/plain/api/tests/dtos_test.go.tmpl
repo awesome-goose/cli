@@ -1,0 +1,21 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Dtos(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}DtosSuite{}).Run()
+}
+
+type {{.ModuleName}}DtosSuite struct {
+	test.Suite
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestIndexDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.IndexDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}

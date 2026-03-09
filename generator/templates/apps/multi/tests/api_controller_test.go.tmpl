@@ -1,0 +1,34 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/api"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestApiController(t *testing.T) {
+	test.NewSuiteRunner(t, &ApiControllerSuite{}).Run()
+}
+
+type ApiControllerSuite struct {
+	test.Suite
+	controller *api.ApiController
+	container  *test.TestContainer
+}
+
+func (s *ApiControllerSuite) SetupTest() {
+	s.container = test.NewTestContainer()
+	s.container.Register(&api.ApiService{})
+	s.controller = &api.ApiController{}
+	s.container.Inject(s.controller)
+}
+
+func (s *ApiControllerSuite) TestController_NotNil() {
+	s.T.Expect(s.controller).Not().ToBeNil()
+}
+
+func (s *ApiControllerSuite) TestController_HasService() {
+	ct := test.NewControllerTest(s.T.T(), s.controller, s.container)
+	s.T.Expect(ct).Not().ToBeNil()
+}

@@ -1,0 +1,40 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Service(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}ServiceSuite{}).Run()
+}
+
+type {{.ModuleName}}ServiceSuite struct {
+	test.Suite
+	service *{{.ModuleNameLower}}.{{.ModuleName}}Service
+}
+
+func (s *{{.ModuleName}}ServiceSuite) SetupTest() {
+	s.service = &{{.ModuleNameLower}}.{{.ModuleName}}Service{}
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestGetData_ReturnsMap() {
+	result := s.service.GetData()
+	s.T.Expect(result).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestGetData_HasMessage() {
+	result := s.service.GetData()
+	s.T.Expect(result["message"]).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestGetData_MessageContainsModuleName() {
+	result := s.service.GetData()
+	s.T.Expect(result["message"]).ToEqual("{{.ModuleName}} module is working")
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestService_NotNil() {
+	s.T.Expect(s.service).Not().ToBeNil()
+}

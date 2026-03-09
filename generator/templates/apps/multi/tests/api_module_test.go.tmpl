@@ -1,0 +1,48 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/api"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestApiModule(t *testing.T) {
+	test.NewSuiteRunner(t, &ApiModuleSuite{}).Run()
+}
+
+type ApiModuleSuite struct {
+	test.Suite
+	module     *api.ApiModule
+	moduleTest *test.ModuleTest
+}
+
+func (s *ApiModuleSuite) SetupTest() {
+	s.module = &api.ApiModule{}
+	container := test.NewTestContainer()
+	s.moduleTest = test.NewModuleTest(s.T.T(), s.module, container)
+}
+
+func (s *ApiModuleSuite) TestModule_NotNil() {
+	s.T.Expect(s.module).Not().ToBeNil()
+}
+
+func (s *ApiModuleSuite) TestModule_Imports() {
+	imports := s.moduleTest.TestImports()
+	s.T.Expect(imports).Not().ToBeNil()
+}
+
+func (s *ApiModuleSuite) TestModule_HasImports() {
+	imports := s.moduleTest.TestImports()
+	s.T.Expect(len(imports) > 0).ToEqual(true)
+}
+
+func (s *ApiModuleSuite) TestModule_Declarations() {
+	declarations := s.moduleTest.TestDeclarations()
+	s.T.Expect(declarations).Not().ToBeNil()
+}
+
+func (s *ApiModuleSuite) TestModule_DeclaresService() {
+	declarations := s.moduleTest.TestDeclarations()
+	s.T.Expect(len(declarations) > 0).ToEqual(true)
+}

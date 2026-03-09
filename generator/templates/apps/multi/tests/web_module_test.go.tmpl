@@ -1,0 +1,49 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/web"
+	"github.com/awesome-goose/goose/testing"
+)
+
+func TestWebModule(t *testing.T) {
+	runner := testing.NewSuiteRunner(t, &testing.Suite{
+		Name: "WebModule",
+	})
+
+	container := testing.NewTestContainer(t)
+
+	runner.Run("should create WebModule", func(t *testing.T) {
+		module := &web.WebModule{}
+		if module == nil {
+			t.Error("Expected module to be created")
+		}
+	})
+
+	runner.Run("should have valid Imports", func(t *testing.T) {
+		mt := testing.NewModuleTest(t, &web.WebModule{}, container)
+		mt.TestImports()
+	})
+
+	runner.Run("should have valid Declarations", func(t *testing.T) {
+		mt := testing.NewModuleTest(t, &web.WebModule{}, container)
+		mt.TestDeclarations()
+	})
+
+	runner.Run("should import SharedModule", func(t *testing.T) {
+		module := &web.WebModule{}
+		imports := module.Imports()
+		if len(imports) < 1 {
+			t.Error("Expected WebModule to import SharedModule")
+		}
+	})
+
+	runner.Run("should declare WebService", func(t *testing.T) {
+		module := &web.WebModule{}
+		declarations := module.Declarations()
+		if len(declarations) < 1 {
+			t.Error("Expected WebModule to declare WebService")
+		}
+	})
+}

@@ -1,0 +1,54 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/shared"
+	"github.com/awesome-goose/goose/testing"
+)
+
+func TestSharedModule(t *testing.T) {
+	runner := testing.NewSuiteRunner(t, &testing.Suite{
+		Name: "SharedModule",
+	})
+
+	container := testing.NewTestContainer(t)
+
+	runner.Run("should create SharedModule", func(t *testing.T) {
+		module := &shared.SharedModule{}
+		if module == nil {
+			t.Error("Expected module to be created")
+		}
+	})
+
+	runner.Run("should have valid Imports", func(t *testing.T) {
+		mt := testing.NewModuleTest(t, &shared.SharedModule{}, container)
+		mt.TestImports()
+	})
+
+	runner.Run("should have valid Exports", func(t *testing.T) {
+		mt := testing.NewModuleTest(t, &shared.SharedModule{}, container)
+		mt.TestExports()
+	})
+
+	runner.Run("should have valid Declarations", func(t *testing.T) {
+		mt := testing.NewModuleTest(t, &shared.SharedModule{}, container)
+		mt.TestDeclarations()
+	})
+
+	runner.Run("should export SharedService", func(t *testing.T) {
+		module := &shared.SharedModule{}
+		exports := module.Exports()
+		if len(exports) < 1 {
+			t.Error("Expected SharedModule to export SharedService")
+		}
+	})
+
+	runner.Run("should declare SharedService", func(t *testing.T) {
+		module := &shared.SharedModule{}
+		declarations := module.Declarations()
+		if len(declarations) < 1 {
+			t.Error("Expected SharedModule to declare SharedService")
+		}
+	})
+}

@@ -1,0 +1,36 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Entity(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}EntitySuite{}).Run()
+}
+
+type {{.ModuleName}}EntitySuite struct {
+	test.Suite
+}
+
+func (s *{{.ModuleName}}EntitySuite) Test{{.ModuleName}}_NotNil() {
+	entity := &{{.ModuleNameLower}}.{{.ModuleName}}{}
+	s.T.Expect(entity).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}EntitySuite) Test{{.ModuleName}}_NameEmpty() {
+	entity := &{{.ModuleNameLower}}.{{.ModuleName}}{}
+	s.T.Expect(entity.Name).ToEqual("")
+}
+
+func (s *{{.ModuleName}}EntitySuite) Test{{.ModuleName}}_NameValue() {
+	entity := &{{.ModuleNameLower}}.{{.ModuleName}}{Name: "Test Name"}
+	s.T.Expect(entity.Name).ToEqual("Test Name")
+}
+
+func (s *{{.ModuleName}}EntitySuite) Test{{.ModuleName}}Entity_NotNil() {
+	entity := &{{.ModuleNameLower}}.{{.ModuleName}}Entity{}
+	s.T.Expect(entity).Not().ToBeNil()
+}

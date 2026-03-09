@@ -1,0 +1,31 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestAppDtos(t *testing.T) {
+	test.NewSuiteRunner(t, &AppDtosSuite{}).Run()
+}
+
+type AppDtosSuite struct {
+	test.Suite
+}
+
+func (s *AppDtosSuite) TestHealthDto_Initialization() {
+	dto := &app.HealthDto{Type: "full"}
+	s.T.Expect(dto.Type).ToEqual("full")
+}
+
+func (s *AppDtosSuite) TestHealthDto_EmptyValue() {
+	dto := &app.HealthDto{}
+	s.T.Expect(dto.Type).ToEqual("")
+}
+
+func (s *AppDtosSuite) TestHealthDto_NotNil() {
+	dto := &app.HealthDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}

@@ -1,0 +1,69 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Service(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}ServiceSuite{}).Run()
+}
+
+type {{.ModuleName}}ServiceSuite struct {
+	test.Suite
+	service *{{.ModuleNameLower}}.{{.ModuleName}}Service
+}
+
+func (s *{{.ModuleName}}ServiceSuite) SetupTest() {
+	s.service = &{{.ModuleNameLower}}.{{.ModuleName}}Service{}
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestList_ReturnsSlice() {
+	result := s.service.List()
+	s.T.Expect(result).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestList_NotEmpty() {
+	result := s.service.List()
+	s.T.Expect(len(result) > 0).ToEqual(true)
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestGet_Returns{{.ModuleName}}() {
+	result := s.service.Get("1")
+	s.T.Expect(result).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestGet_HasName() {
+	result := s.service.Get("1")
+	s.T.Expect(result.Name).Not().ToBeEmpty()
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestCreate_Returns{{.ModuleName}}() {
+	dto := &{{.ModuleNameLower}}.CreateDto{Name: "New Item"}
+	result := s.service.Create(dto)
+	s.T.Expect(result).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestCreate_HasName() {
+	dto := &{{.ModuleNameLower}}.CreateDto{Name: "Test Name"}
+	result := s.service.Create(dto)
+	s.T.Expect(result.Name).ToEqual("Test Name")
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestUpdate_Returns{{.ModuleName}}() {
+	dto := &{{.ModuleNameLower}}.UpdateDto{ID: "1", Name: "Updated"}
+	result := s.service.Update(dto)
+	s.T.Expect(result).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestUpdate_HasUpdatedName() {
+	dto := &{{.ModuleNameLower}}.UpdateDto{ID: "1", Name: "Updated Name"}
+	result := s.service.Update(dto)
+	s.T.Expect(result.Name).ToEqual("Updated Name")
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestService_NotNil() {
+	s.T.Expect(s.service).Not().ToBeNil()
+}

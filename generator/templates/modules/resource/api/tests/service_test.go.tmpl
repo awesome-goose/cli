@@ -1,0 +1,25 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Service(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}ServiceSuite{}).Run()
+}
+
+type {{.ModuleName}}ServiceSuite struct {
+	test.Suite
+	service *{{.ModuleNameLower}}.{{.ModuleName}}Service
+}
+
+func (s *{{.ModuleName}}ServiceSuite) SetupTest() {
+	s.service = &{{.ModuleNameLower}}.{{.ModuleName}}Service{}
+}
+
+func (s *{{.ModuleName}}ServiceSuite) TestService_NotNil() {
+	s.T.Expect(s.service).Not().ToBeNil()
+}

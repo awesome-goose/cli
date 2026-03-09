@@ -585,6 +585,28 @@ Remove-Item "C:\Program Files\goose" -Recurse -Force
 
 ---
 
+## Running Tests
+
+```bash
+# Run all tests
+go test ./tests/...
+
+# Run with verbose output
+go test ./tests/... -v
+```
+
+---
+
+## Code Coverage
+
+```bash
+# Coverage for all goose packages
+go test ./tests/... -coverpkg=./...
+
+```
+
+---
+
 ## Tips
 
 1. **Naming Conventions:** Use lowercase, singular names for modules (e.g., `user` not `Users`)

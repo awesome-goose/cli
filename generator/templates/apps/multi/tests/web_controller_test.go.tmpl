@@ -1,0 +1,45 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/web"
+	"github.com/awesome-goose/goose/testing"
+)
+
+func TestWebController(t *testing.T) {
+	runner := testing.NewSuiteRunner(t, &testing.Suite{
+		Name: "WebController",
+	})
+
+	container := testing.NewTestContainer(t)
+
+	runner.Run("should create WebController", func(t *testing.T) {
+		controller := &web.WebController{
+			Service: &web.WebService{},
+		}
+		if controller == nil {
+			t.Error("Expected controller to be created")
+		}
+	})
+
+	runner.Run("should have Status method", func(t *testing.T) {
+		ct := testing.NewControllerTest(t, &web.WebController{
+			Service: &web.WebService{},
+		}, container)
+		result := ct.Run("Status", nil)
+		if result == nil {
+			t.Error("Expected Status to return output")
+		}
+	})
+
+	runner.Run("should have Home method", func(t *testing.T) {
+		ct := testing.NewControllerTest(t, &web.WebController{
+			Service: &web.WebService{},
+		}, container)
+		result := ct.Run("Home", nil)
+		if result == nil {
+			t.Error("Expected Home to return output")
+		}
+	})
+}

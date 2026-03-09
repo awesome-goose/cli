@@ -1,0 +1,31 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Dtos(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}DtosSuite{}).Run()
+}
+
+type {{.ModuleName}}DtosSuite struct {
+	test.Suite
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestRunDto_NotNil() {
+	dto := &{{.ModuleNameLower}}.RunDto{}
+	s.T.Expect(dto).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestRunDto_VerboseDefault() {
+	dto := &{{.ModuleNameLower}}.RunDto{}
+	s.T.Expect(dto.Verbose).ToEqual(false)
+}
+
+func (s *{{.ModuleName}}DtosSuite) TestRunDto_VerboseTrue() {
+	dto := &{{.ModuleNameLower}}.RunDto{Verbose: true}
+	s.T.Expect(dto.Verbose).ToEqual(true)
+}

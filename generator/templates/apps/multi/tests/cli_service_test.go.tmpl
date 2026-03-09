@@ -1,0 +1,35 @@
+package tests
+
+import (
+	"testing"
+
+	cliapp "{{.ModulePath}}/app/cli"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestCliService(t *testing.T) {
+	test.NewSuiteRunner(t, &CliServiceSuite{}).Run()
+}
+
+type CliServiceSuite struct {
+	test.Suite
+	service *cliapp.CliService
+}
+
+func (s *CliServiceSuite) SetupTest() {
+	s.service = &cliapp.CliService{}
+}
+
+func (s *CliServiceSuite) TestGetVersion_ReturnsVersion() {
+	result := s.service.GetVersion()
+	s.T.Expect(result).ToEqual("0.0.0")
+}
+
+func (s *CliServiceSuite) TestGetVersion_NotEmpty() {
+	result := s.service.GetVersion()
+	s.T.Expect(result).Not().ToBeEmpty()
+}
+
+func (s *CliServiceSuite) TestService_NotNil() {
+	s.T.Expect(s.service).Not().ToBeNil()
+}

@@ -1,0 +1,48 @@
+package tests
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func TestAppModule(t *testing.T) {
+	test.NewSuiteRunner(t, &AppModuleSuite{}).Run()
+}
+
+type AppModuleSuite struct {
+	test.Suite
+	module     *app.AppModule
+	moduleTest *test.ModuleTest
+}
+
+func (s *AppModuleSuite) SetupTest() {
+	s.module = &app.AppModule{}
+	container := test.NewTestContainer()
+	s.moduleTest = test.NewModuleTest(s.T.T(), s.module, container)
+}
+
+func (s *AppModuleSuite) TestModule_NotNil() {
+	s.T.Expect(s.module).Not().ToBeNil()
+}
+
+func (s *AppModuleSuite) TestModule_Imports() {
+	imports := s.moduleTest.TestImports()
+	s.T.Expect(imports).Not().ToBeNil()
+}
+
+func (s *AppModuleSuite) TestModule_HasImports() {
+	imports := s.moduleTest.TestImports()
+	s.T.Expect(len(imports) > 0).ToEqual(true)
+}
+
+func (s *AppModuleSuite) TestModule_Declarations() {
+	declarations := s.moduleTest.TestDeclarations()
+	s.T.Expect(declarations).Not().ToBeNil()
+}
+
+func (s *AppModuleSuite) TestModule_DeclaresService() {
+	declarations := s.moduleTest.TestDeclarations()
+	s.T.Expect(len(declarations) > 0).ToEqual(true)
+}

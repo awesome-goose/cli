@@ -1,0 +1,34 @@
+package {{.ModuleNameLower}}_test
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	test "github.com/awesome-goose/goose/testing"
+)
+
+func Test{{.ModuleName}}Controller(t *testing.T) {
+	test.NewSuiteRunner(t, &{{.ModuleName}}ControllerSuite{}).Run()
+}
+
+type {{.ModuleName}}ControllerSuite struct {
+	test.Suite
+	controller *{{.ModuleNameLower}}.{{.ModuleName}}Controller
+	container  *test.TestContainer
+}
+
+func (s *{{.ModuleName}}ControllerSuite) SetupTest() {
+	s.container = test.NewTestContainer()
+	s.container.Register(&{{.ModuleNameLower}}.{{.ModuleName}}Service{})
+	s.controller = &{{.ModuleNameLower}}.{{.ModuleName}}Controller{}
+	s.container.Inject(s.controller)
+}
+
+func (s *{{.ModuleName}}ControllerSuite) TestController_NotNil() {
+	s.T.Expect(s.controller).Not().ToBeNil()
+}
+
+func (s *{{.ModuleName}}ControllerSuite) TestController_HasService() {
+	ct := test.NewControllerTest(s.T.T(), s.controller, s.container)
+	s.T.Expect(ct).Not().ToBeNil()
+}
