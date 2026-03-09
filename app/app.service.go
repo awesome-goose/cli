@@ -8,7 +8,7 @@ import (
 	"github.com/awesome-goose/goose-cli/generator"
 )
 
-const VERSION = "0.0.0"
+const VERSION = "0.0.8"
 
 type AppService struct{}
 

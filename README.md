@@ -167,7 +167,7 @@ goose version
 ┌──────────────────────────────────────────────────────────────────┐
 │ Goose CLI                                                        │
 ├──────────────────────────────────────────────────────────────────┤
-│ Version: 0.0.0                                                   │
+│ Version: x.x.x                                                   │
 │ A tool for scaffolding Goose applications                        │
 │                                                                  │
 │ Commands:                                                        │
