@@ -37,7 +37,7 @@ func (s *AppServiceSuite) TeardownTest() {
 func (s *AppServiceSuite) TestGetVersion_ReturnsCorrectVersion() {
 	version := s.service.GetVersion()
 	s.T.Expect(version).Not().ToBeEmpty()
-	s.T.Expect(version).ToEqual("0.0.0")
+	s.T.Expect(version).ToEqual("0.0.8")
 }
 
 func (s *AppServiceSuite) TestGetVersion_ReturnsConsistentValue() {
