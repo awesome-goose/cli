@@ -2,11 +2,14 @@ package generate
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/awesome-goose/goose/io/output"
 	"github.com/awesome-goose/goose/types"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
+
+var titleCaser = cases.Title(language.English)
 
 type GenerateController struct {
 	generateService *GenerateService `inject:""`
@@ -51,5 +54,5 @@ func (c *GenerateController) Module(body *ModuleDto) types.Output {
 		return output.ConsoleError(fmt.Sprintf("Error: %v", err))
 	}
 
-	return output.Box(fmt.Sprintf("Module '%s' Generated", strings.Title(body.Name)), result)
+	return output.Box(fmt.Sprintf("Module '%s' Generated", titleCaser.String(body.Name)), result)
 }

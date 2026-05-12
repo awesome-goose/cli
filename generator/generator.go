@@ -10,7 +10,12 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
+
+var generatorTitleCaser = cases.Title(language.English)
 
 //go:embed all:templates/apps
 var appTemplates embed.FS
@@ -299,7 +304,7 @@ func toPascalCase(s string) string {
 	}
 
 	if result.Len() == 0 {
-		return strings.Title(strings.ToLower(s))
+		return generatorTitleCaser.String(strings.ToLower(s))
 	}
 
 	return result.String()
