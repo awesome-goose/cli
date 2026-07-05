@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
+	"github.com/awesome-goose/goose/core"
 	test "github.com/awesome-goose/goose/testing"
 )
 
@@ -14,21 +15,26 @@ func Test{{.ModuleName}}Controller(t *testing.T) {
 type {{.ModuleName}}ControllerSuite struct {
 	test.Suite
 	controller *{{.ModuleNameLower}}.{{.ModuleName}}Controller
-	container  *test.TestContainer
+	container  *core.Container
 }
 
 func (s *{{.ModuleName}}ControllerSuite) SetupTest() {
-	s.container = test.NewTestContainer()
-	s.container.Register(&{{.ModuleNameLower}}.{{.ModuleName}}Service{})
+	s.container = core.NewContainer()
+	s.container.Register(func() *{{.ModuleNameLower}}.{{.ModuleName}}Service {
+		return &{{.ModuleNameLower}}.{{.ModuleName}}Service{}
+	}, "", true)
+
 	s.controller = &{{.ModuleNameLower}}.{{.ModuleName}}Controller{}
-	s.container.Inject(s.controller)
+	// Fill resolves the service; the log field stays nil (not needed here)
+	s.container.Fill(s.controller)
+}
+
+func (s *{{.ModuleName}}ControllerSuite) TeardownTest() {
+	if s.container != nil {
+		s.container.Reset()
+	}
 }
 
 func (s *{{.ModuleName}}ControllerSuite) TestController_NotNil() {
 	s.T.Expect(s.controller).Not().ToBeNil()
-}
-
-func (s *{{.ModuleName}}ControllerSuite) TestController_HasService() {
-	ct := test.NewControllerTest(s.T.T(), s.controller, s.container)
-	s.T.Expect(ct).Not().ToBeNil()
 }

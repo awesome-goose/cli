@@ -5,6 +5,7 @@ import (
 
 	"{{.ModulePath}}/app/{{.ModuleNameLower}}"
 	test "github.com/awesome-goose/goose/testing"
+	"github.com/awesome-goose/goose/types"
 )
 
 func Test{{.ModuleName}}Routes(t *testing.T) {
@@ -17,7 +18,11 @@ type {{.ModuleName}}RoutesSuite struct {
 }
 
 func (s *{{.ModuleName}}RoutesSuite) SetupTest() {
-	s.routeTest = test.NewRouteTest(s.T.T(), {{.ModuleNameLower}}.ROUTES.Routes())
+	routes, err := {{.ModuleNameLower}}.ROUTES.(types.Router).Routes()
+	if err != nil {
+		s.T.T().Fatal(err)
+	}
+	s.routeTest = test.NewRouteTest(s.T.T(), routes)
 }
 
 func (s *{{.ModuleName}}RoutesSuite) TestRoutes_NotNil() {
@@ -42,7 +47,7 @@ func (s *{{.ModuleName}}RoutesSuite) TestRoutes_CreateRouteExists() {
 }
 
 func (s *{{.ModuleName}}RoutesSuite) TestRoutes_UpdateRouteExists() {
-	s.routeTest.TestRouteExists("PUT", []string{"{{.ModuleNameLower}}", ":id"})
+	s.routeTest.TestRouteExists("PATCH", []string{"{{.ModuleNameLower}}", ":id"})
 }
 
 func (s *{{.ModuleName}}RoutesSuite) TestRoutes_DeleteRouteExists() {

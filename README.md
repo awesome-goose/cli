@@ -28,6 +28,7 @@ A command-line tool for scaffolding Goose framework applications and modules.
   - [CLI Template](#cli-template)
   - [Web Template](#web-template)
   - [Multi-Platform Template](#multi-platform-template)
+  - [SPA Template](#spa-template)
 - [Module Types](#module-types)
   - [Plain Module](#plain-module)
   - [Resource Module](#resource-module)
@@ -171,7 +172,8 @@ goose version
 │ A tool for scaffolding Goose applications                        │
 │                                                                  │
 │ Commands:                                                        │
-│   goose app --name=<name> --template=<api|cli|web|multi>         │
+│   goose app --name=<name> --template=<api|cli|web|multi|spa>     │
+│             [--framework=<react|vue|svelte|ng>]                  │
 │   goose g module --name=<name> --type=<plain|resource>           │
 │   goose version                                                  │
 │                                                                  │
@@ -180,6 +182,7 @@ goose version
 │   cli   - Command-line interface application                     │
 │   web   - Web application with HTML templates                    │
 │   multi - Multi-platform app (API + Web + CLI in one)            │
+│   spa   - Single-page app: JSON API + frontend as one service    │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -188,16 +191,17 @@ goose version
 Create a new Goose application from a template.
 
 ```bash
-goose app --name=<name> --template=<template> [--path=<path>]
+goose app --name=<name> --template=<template> [--framework=<framework>] [--path=<path>]
 ```
 
 **Flags:**
 
-| Flag         | Required | Description                                                                         |
-| ------------ | -------- | ----------------------------------------------------------------------------------- |
-| `--name`     | Yes      | Name of the application (used for directory and module name)                        |
-| `--template` | Yes      | Application template type: `api`, `cli`, `web`, or `multi`                          |
-| `--path`     | No       | Custom path where the application should be created (defaults to current directory) |
+| Flag          | Required       | Description                                                                          |
+| ------------- | -------------- | ------------------------------------------------------------------------------------ |
+| `--name`      | Yes            | Name of the application (used for directory and module name)                         |
+| `--template`  | Yes            | Application template type: `api`, `cli`, `web`, `multi`, or `spa`                    |
+| `--framework` | With `spa`     | Frontend framework for the spa template: `react`, `vue`, `svelte`, or `ng` (Angular) |
+| `--path`      | No             | Custom path where the application should be created (defaults to current directory)  |
 
 **Examples:**
 
@@ -213,6 +217,9 @@ goose app --name=myweb --template=web
 
 # Create a multi-platform application (API + Web + CLI)
 goose app --name=myapp --template=multi
+
+# Create a single-page application (Go API + React frontend, one service)
+goose app --name=myspa --template=spa --framework=react
 
 # Create in a specific directory
 goose app --name=myapp --template=api --path=/path/to/projects
@@ -233,7 +240,7 @@ goose g module --name=<name> [--type=<type>] [--template=<template>]
 | ------------ | -------- | ------------- | -------------------------------------------------------- |
 | `--name`     | Yes      | -             | Name of the module (e.g., `users`, `products`, `orders`) |
 | `--type`     | No       | `plain`       | Module type: `plain` or `resource`                       |
-| `--template` | No       | Auto-detected | Target platform template: `api`, `cli`, or `web`         |
+| `--template` | No       | Auto-detected | Target platform template: `api`, `cli`, `web`, or `spa`  |
 
 **Examples:**
 
@@ -376,6 +383,53 @@ myapp/
 ```
 
 **Features:** Single codebase for multiple interfaces, shared business logic, platform-specific controllers, unified configuration.
+
+### SPA Template
+
+Single-page application: a Go backend serving JSON API routes under `/api` and the built frontend for every other path — one service, one port. Supports React, Vue, Svelte, and Angular.
+
+```bash
+goose app --name=myspa --template=spa --framework=react   # or vue | svelte | ng
+```
+
+**Structure:**
+
+```
+myspa/
+├── .env
+├── .gitignore
+├── go.mod
+├── main.go
+├── Makefile              # install / dev / build / dist workflow
+├── README.md
+├── app/                  # Backend modules (JSON API, served under /api)
+│   ├── app.controller.go
+│   ├── app.dtos.go
+│   ├── app.module.go
+│   ├── app.routes.go
+│   └── app.service.go
+├── frontend/             # Chosen framework's source (builds into public/)
+│   ├── package.json
+│   └── src/
+└── tests/
+```
+
+**Makefile targets:**
+
+| Target           | What it does                                          |
+| ---------------- | ----------------------------------------------------- |
+| `install`        | `go mod tidy` + `npm install`                         |
+| `dev`            | Go backend and frontend dev server together           |
+| `dev-backend`    | Go server only (:8080, serves `/api` + `public/`)     |
+| `dev-frontend`   | Frontend dev server only (proxies `/api` to :8080)    |
+| `build-frontend` | Compile/transpile the frontend into `public/`         |
+| `build`          | Compile the Go binary                                 |
+| `dist`           | Full distribution bundle (binary + assets) in `dist/` |
+| `run`            | Frontend build, then serve everything from Go         |
+| `test`           | Go tests                                              |
+| `clean`          | Remove build artifacts and dependencies               |
+
+**Features:** One HTTP service for API + frontend, `index.html` fallback for client-side routing, framework dev server with `/api` proxy for hot reload, framework-agnostic Makefile workflow.
 
 ---
 

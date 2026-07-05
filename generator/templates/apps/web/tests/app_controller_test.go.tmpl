@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"{{.ModulePath}}/app"
+	"github.com/awesome-goose/goose/core"
 	test "github.com/awesome-goose/goose/testing"
 )
 
@@ -14,21 +15,30 @@ func TestAppController(t *testing.T) {
 type AppControllerSuite struct {
 	test.Suite
 	controller *app.AppController
-	container  *test.TestContainer
+	container  *core.Container
 }
 
 func (s *AppControllerSuite) SetupTest() {
-	s.container = test.NewTestContainer()
-	s.container.Register(&app.AppService{})
+	s.container = core.NewContainer()
+	s.container.Register(func() *app.AppService {
+		return &app.AppService{}
+	}, "", true)
+
 	s.controller = &app.AppController{}
-	s.container.Inject(s.controller)
+	s.container.Fill(s.controller)
+}
+
+func (s *AppControllerSuite) TeardownTest() {
+	if s.container != nil {
+		s.container.Reset()
+	}
 }
 
 func (s *AppControllerSuite) TestController_NotNil() {
 	s.T.Expect(s.controller).Not().ToBeNil()
 }
 
-func (s *AppControllerSuite) TestController_HasService() {
-	ct := test.NewControllerTest(s.T.T(), s.controller, s.container)
-	s.T.Expect(ct).Not().ToBeNil()
+func (s *AppControllerSuite) TestHealth_ReturnsOutput() {
+	output := s.controller.Health(&app.HealthDto{})
+	s.T.Expect(output).Not().ToBeNil()
 }

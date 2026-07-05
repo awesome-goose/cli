@@ -39,7 +39,7 @@ func (s *GenerateService) GenerateModule(name, moduleType, template string) ([]s
 	}
 
 	// Validate template
-	validTemplates := []string{"api", "cli", "web"}
+	validTemplates := []string{"api", "cli", "web", "spa"}
 	isValidTemplate := false
 	for _, t := range validTemplates {
 		if tmpl == t {
@@ -48,7 +48,13 @@ func (s *GenerateService) GenerateModule(name, moduleType, template string) ([]s
 		}
 	}
 	if !isValidTemplate {
-		return nil, fmt.Errorf("invalid template '%s'. Valid templates: api, cli, web", tmpl)
+		return nil, fmt.Errorf("invalid template '%s'. Valid templates: api, cli, web, spa", tmpl)
+	}
+
+	// SPA backend modules are JSON API modules — reuse the api module templates
+	moduleTemplate := tmpl
+	if tmpl == "spa" {
+		moduleTemplate = "api"
 	}
 
 	// Check if module already exists
@@ -58,7 +64,7 @@ func (s *GenerateService) GenerateModule(name, moduleType, template string) ([]s
 	}
 
 	// Generate the module
-	gen := generator.NewModuleGenerator(name, moduleType, tmpl, appPath)
+	gen := generator.NewModuleGenerator(name, moduleType, moduleTemplate, appPath)
 	if err := gen.Generate(); err != nil {
 		return nil, fmt.Errorf("failed to generate module: %w", err)
 	}

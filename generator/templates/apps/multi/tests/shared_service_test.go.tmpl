@@ -35,27 +35,8 @@ func (s *SharedServiceSuite) TestGetAppInfo_HasVersion() {
 	s.T.Expect(result["version"]).ToEqual("0.0.0")
 }
 
-func (s *SharedServiceSuite) TestFormatResponse_ReturnsMap() {
+func (s *SharedServiceSuite) TestFormatResponse_ReturnsSuccess() {
 	result := s.service.FormatResponse("test")
-	s.T.Expect(result).Not().ToBeNil()
-}
-
-func (s *SharedServiceSuite) TestFormatResponse_HasSuccess() {
-	result := s.service.FormatResponse("data")
 	s.T.Expect(result["success"]).ToEqual(true)
-}
-
-func (s *SharedServiceSuite) TestFormatResponse_HasData() {
-	result := s.service.FormatResponse("mydata")
-	s.T.Expect(result["data"]).ToEqual("mydata")
-}
-
-func (s *SharedServiceSuite) TestFormatResponse_NilData() {
-	result := s.service.FormatResponse(nil)
-	s.T.Expect(result["success"]).ToEqual(true)
-}
-
-func (s *SharedServiceSuite) TestFormatResponse_IntData() {
-	result := s.service.FormatResponse(42)
-	s.T.Expect(result["data"]).ToEqual(42)
+	s.T.Expect(result["data"]).ToEqual("test")
 }

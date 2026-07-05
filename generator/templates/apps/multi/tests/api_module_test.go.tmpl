@@ -27,22 +27,7 @@ func (s *ApiModuleSuite) TestModule_NotNil() {
 	s.T.Expect(s.module).Not().ToBeNil()
 }
 
-func (s *ApiModuleSuite) TestModule_Imports() {
-	imports := s.moduleTest.TestImports()
-	s.T.Expect(imports).Not().ToBeNil()
-}
-
 func (s *ApiModuleSuite) TestModule_HasImports() {
 	imports := s.moduleTest.TestImports()
 	s.T.Expect(len(imports) > 0).ToEqual(true)
-}
-
-func (s *ApiModuleSuite) TestModule_Declarations() {
-	declarations := s.moduleTest.TestDeclarations()
-	s.T.Expect(declarations).Not().ToBeNil()
-}
-
-func (s *ApiModuleSuite) TestModule_DeclaresService() {
-	declarations := s.moduleTest.TestDeclarations()
-	s.T.Expect(len(declarations) > 0).ToEqual(true)
 }

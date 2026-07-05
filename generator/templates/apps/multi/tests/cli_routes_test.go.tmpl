@@ -5,6 +5,7 @@ import (
 
 	"{{.ModulePath}}/app/cli"
 	test "github.com/awesome-goose/goose/testing"
+	"github.com/awesome-goose/goose/types"
 )
 
 func TestCliRoutes(t *testing.T) {
@@ -17,11 +18,11 @@ type CliRoutesSuite struct {
 }
 
 func (s *CliRoutesSuite) SetupTest() {
-	s.routeTest = test.NewRouteTest(s.T.T(), cli.CLI_ROUTES.Routes())
-}
-
-func (s *CliRoutesSuite) TestRoutes_NotNil() {
-	s.T.Expect(s.routeTest.Routes()).Not().ToBeNil()
+	routes, err := cli.CLI_ROUTES.(types.Router).Routes()
+	if err != nil {
+		s.T.T().Fatal(err)
+	}
+	s.routeTest = test.NewRouteTest(s.T.T(), routes)
 }
 
 func (s *CliRoutesSuite) TestRoutes_HasRoutes() {
@@ -29,14 +30,14 @@ func (s *CliRoutesSuite) TestRoutes_HasRoutes() {
 	s.T.Expect(len(routes) > 0).ToEqual(true)
 }
 
-func (s *CliRoutesSuite) TestRoutes_InfoRouteExists() {
-	s.routeTest.TestRouteExists("CLI", []string{"info"})
+func (s *CliRoutesSuite) TestRoutes_InfoCommandExists() {
+	s.routeTest.TestRouteExists("GET", []string{"info"})
 }
 
-func (s *CliRoutesSuite) TestRoutes_HelpRouteExists() {
-	s.routeTest.TestRouteExists("CLI", []string{"help"})
+func (s *CliRoutesSuite) TestRoutes_HelpCommandExists() {
+	s.routeTest.TestRouteExists("GET", []string{"help"})
 }
 
-func (s *CliRoutesSuite) TestRoutes_VersionRouteExists() {
-	s.routeTest.TestRouteExists("CLI", []string{"version"})
+func (s *CliRoutesSuite) TestRoutes_VersionCommandExists() {
+	s.routeTest.TestRouteExists("GET", []string{"version"})
 }

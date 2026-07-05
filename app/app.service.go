@@ -8,7 +8,7 @@ import (
 	"github.com/awesome-goose/goose-cli/generator"
 )
 
-const VERSION = "0.0.8"
+const VERSION = "0.0.9"
 
 type AppService struct{}
 
@@ -16,7 +16,7 @@ func (s *AppService) GetVersion() string {
 	return VERSION
 }
 
-func (s *AppService) CreateApp(name, template, path string) ([]string, error) {
+func (s *AppService) CreateApp(name, template, path, framework string) ([]string, error) {
 	// Determine output path
 	outputPath := path
 	if outputPath == "" {
@@ -36,7 +36,7 @@ func (s *AppService) CreateApp(name, template, path string) ([]string, error) {
 	}
 
 	// Generate the application
-	gen := generator.NewAppGenerator(name, template, fullPath)
+	gen := generator.NewAppGenerator(name, template, fullPath).WithFramework(framework)
 	if err := gen.Generate(); err != nil {
 		return nil, fmt.Errorf("failed to generate application: %w", err)
 	}
@@ -61,6 +61,18 @@ func (s *AppService) CreateApp(name, template, path string) ([]string, error) {
 			"Run modes:",
 			"  go run main.go                # Start API (port 8080) + Web (port 3000) servers",
 			"  go run main.go cli <command>  # Run CLI commands",
+		)
+	case "spa":
+		result = append(result,
+			"  make install                  # go mod tidy + npm install",
+			"",
+			"Development:",
+			"  make dev                      # Go API (:8080) + "+framework+" dev server together",
+			"  make dev-backend              # Go server only (serves /api + public/)",
+			"  make dev-frontend             # "+framework+" dev server only (proxies /api -> :8080)",
+			"",
+			"Production:",
+			"  make dist                     # frontend build -> public/, Go binary + assets -> dist/",
 		)
 	default:
 		result = append(result, "  go run main.go")

@@ -14,21 +14,18 @@ func TestApiController(t *testing.T) {
 type ApiControllerSuite struct {
 	test.Suite
 	controller *api.ApiController
-	container  *test.TestContainer
 }
 
 func (s *ApiControllerSuite) SetupTest() {
-	s.container = test.NewTestContainer()
-	s.container.Register(&api.ApiService{})
-	s.controller = &api.ApiController{}
-	s.container.Inject(s.controller)
+	s.controller = &api.ApiController{Service: &api.ApiService{}}
 }
 
-func (s *ApiControllerSuite) TestController_NotNil() {
-	s.T.Expect(s.controller).Not().ToBeNil()
+func (s *ApiControllerSuite) TestStatus_ReturnsOutput() {
+	output := s.controller.Status(&api.ApiStatusInput{})
+	s.T.Expect(output).Not().ToBeNil()
 }
 
-func (s *ApiControllerSuite) TestController_HasService() {
-	ct := test.NewControllerTest(s.T.T(), s.controller, s.container)
-	s.T.Expect(ct).Not().ToBeNil()
+func (s *ApiControllerSuite) TestHealth_ReturnsOutput() {
+	output := s.controller.Health(&api.ApiHealthInput{})
+	s.T.Expect(output).Not().ToBeNil()
 }

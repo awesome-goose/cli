@@ -69,6 +69,7 @@ func (s *AppControllerSuite) TestVersion_ContainsTemplatesList() {
 	s.T.Expect(content).ToContainString("cli")
 	s.T.Expect(content).ToContainString("web")
 	s.T.Expect(content).ToContainString("multi")
+	s.T.Expect(content).ToContainString("spa")
 }
 
 func (s *AppControllerSuite) TestApp_MissingName_ReturnsError() {
@@ -129,19 +130,72 @@ func (s *AppControllerSuite) TestApp_ValidApiTemplate_Accepted() {
 }
 
 func (s *AppControllerSuite) TestApp_ValidTemplatesAccepted() {
-	validTemplates := []string{"api", "cli", "web", "multi"}
+	validTemplates := []string{"api", "cli", "web", "multi", "spa"}
 
 	for _, tmpl := range validTemplates {
+		framework := ""
+		if tmpl == "spa" {
+			framework = "react"
+		}
+
 		dto := &app.AppDto{
-			Name:     "testapp",
-			Template: tmpl,
-			Path:     "/tmp/goose-test-invalid-path-" + test.NewFixture().String(8),
+			Name:      "testapp",
+			Template:  tmpl,
+			Framework: framework,
+			Path:      "/tmp/goose-test-invalid-path-" + test.NewFixture().String(8),
 		}
 
 		output := s.controller.App(dto)
 		content := getOutputContent(output)
 		s.T.Expect(content).Not().ToContainString("invalid template '" + tmpl + "'")
 	}
+}
+
+func (s *AppControllerSuite) TestApp_SpaMissingFramework_ReturnsError() {
+	dto := &app.AppDto{
+		Name:     "testapp",
+		Template: "spa",
+		Path:     "",
+	}
+
+	output := s.controller.App(dto)
+	content := getOutputContent(output)
+
+	s.T.Expect(content).ToContainString("Error")
+	s.T.Expect(content).ToContainString("--framework")
+	s.T.Expect(content).ToContainString("react, vue, svelte, or ng")
+}
+
+func (s *AppControllerSuite) TestApp_SpaInvalidFramework_ReturnsError() {
+	invalidFrameworks := []string{"angular", "REACT", "next", "solid"}
+
+	for _, framework := range invalidFrameworks {
+		dto := &app.AppDto{
+			Name:      "testapp",
+			Template:  "spa",
+			Framework: framework,
+			Path:      "",
+		}
+
+		output := s.controller.App(dto)
+		content := getOutputContent(output)
+		s.T.Expect(content).ToContainString("invalid framework")
+	}
+}
+
+func (s *AppControllerSuite) TestApp_FrameworkWithNonSpaTemplate_ReturnsError() {
+	dto := &app.AppDto{
+		Name:      "testapp",
+		Template:  "api",
+		Framework: "react",
+		Path:      "",
+	}
+
+	output := s.controller.App(dto)
+	content := getOutputContent(output)
+
+	s.T.Expect(content).ToContainString("Error")
+	s.T.Expect(content).ToContainString("--framework is only valid with --template=spa")
 }
 
 func (s *AppControllerSuite) TestApp_InvalidTemplatesRejected() {

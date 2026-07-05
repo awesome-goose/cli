@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	cliapp "{{.ModulePath}}/app/cli"
+	"{{.ModulePath}}/app/cli"
 	test "github.com/awesome-goose/goose/testing"
 )
 
@@ -13,11 +13,11 @@ func TestCliService(t *testing.T) {
 
 type CliServiceSuite struct {
 	test.Suite
-	service *cliapp.CliService
+	service *cli.CliService
 }
 
 func (s *CliServiceSuite) SetupTest() {
-	s.service = &cliapp.CliService{}
+	s.service = &cli.CliService{}
 }
 
 func (s *CliServiceSuite) TestGetVersion_ReturnsVersion() {
@@ -28,8 +28,4 @@ func (s *CliServiceSuite) TestGetVersion_ReturnsVersion() {
 func (s *CliServiceSuite) TestGetVersion_NotEmpty() {
 	result := s.service.GetVersion()
 	s.T.Expect(result).Not().ToBeEmpty()
-}
-
-func (s *CliServiceSuite) TestService_NotNil() {
-	s.T.Expect(s.service).Not().ToBeNil()
 }

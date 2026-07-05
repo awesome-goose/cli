@@ -1,0 +1,51 @@
+# {{.AppName}} — Goose SPA ({{.Framework}} frontend)
+#
+# Every frontend starter ships the same npm-script contract:
+#   npm run dev    -> framework dev server (proxies /api -> :8080)
+#   npm run build  -> production build emitted into $(STATIC_DIR)/
+# so these recipes are identical for react, vue, svelte, and ng.
+
+FRAMEWORK    := {{.Framework}}
+FRONTEND_DIR := frontend
+STATIC_DIR   := public
+DIST_DIR     := dist
+BINARY       := {{.AppNameLower}}
+
+.PHONY: install dev dev-backend dev-frontend build-frontend build dist run test clean
+
+install: ## Install Go and npm dependencies
+	go mod tidy
+	cd $(FRONTEND_DIR) && npm install
+
+dev-backend: ## Go server on :8080 (serves /api and $(STATIC_DIR)/)
+	go run main.go
+
+dev-frontend: ## $(FRAMEWORK) dev server with /api proxy to :8080
+	cd $(FRONTEND_DIR) && npm run dev
+
+dev: ## Run both dev servers; Ctrl-C stops both
+	@trap 'kill 0' INT TERM EXIT; \
+	go run main.go & \
+	( cd $(FRONTEND_DIR) && npm run dev )
+
+build-frontend: ## Compile/transpile the frontend into $(STATIC_DIR)/
+	cd $(FRONTEND_DIR) && npm run build
+
+build: ## Compile the Go binary
+	go build -o $(BINARY) main.go
+
+dist: build-frontend build ## Deployable bundle in $(DIST_DIR)/
+	rm -rf $(DIST_DIR)
+	mkdir -p $(DIST_DIR)
+	cp $(BINARY) $(DIST_DIR)/
+	cp -R $(STATIC_DIR) $(DIST_DIR)/$(STATIC_DIR)
+	cp .env $(DIST_DIR)/.env
+
+run: build-frontend ## Build the frontend, then serve everything from Go
+	go run main.go
+
+test: ## Run Go tests
+	go test ./...
+
+clean: ## Remove build artifacts and dependencies
+	rm -rf $(BINARY) $(DIST_DIR) $(STATIC_DIR) $(FRONTEND_DIR)/node_modules $(FRONTEND_DIR)/.angular

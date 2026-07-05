@@ -185,6 +185,36 @@ func (s *GenerateServiceSuite) TestGenerateModule_AutoDetectsWebTemplate() {
 	s.T.Expect(resultStr).ToContainString("web app")
 }
 
+func (s *GenerateServiceSuite) TestGenerateModule_SpaTemplateUsesApiModules() {
+	appPath := s.createMockGooseApp("spa")
+	os.Chdir(appPath)
+
+	result, err := s.service.GenerateModule("users", "plain", "spa")
+
+	s.T.Expect(err).ToBeNil()
+	s.T.Expect(result).Not().ToBeNil()
+
+	resultStr := joinStrings(result)
+	s.T.Expect(resultStr).ToContainString("spa app")
+
+	moduleDir := filepath.Join(appPath, "app", "users")
+	s.T.Expect(fileExists(filepath.Join(moduleDir, "users.module.go"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(moduleDir, "users.controller.go"))).ToBeTrue()
+}
+
+func (s *GenerateServiceSuite) TestGenerateModule_AutoDetectsSpaTemplate() {
+	appPath := s.createMockGooseApp("spa")
+	os.Chdir(appPath)
+
+	result, err := s.service.GenerateModule("orders", "plain", "")
+
+	s.T.Expect(err).ToBeNil()
+	s.T.Expect(result).Not().ToBeNil()
+
+	resultStr := joinStrings(result)
+	s.T.Expect(resultStr).ToContainString("spa app")
+}
+
 func (s *GenerateServiceSuite) TestGenerateModule_GeneratesRequiredFiles() {
 	appPath := s.createMockGooseApp("api")
 	os.Chdir(appPath)

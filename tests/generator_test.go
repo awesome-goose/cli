@@ -132,6 +132,95 @@ func (s *GeneratorSuite) TestAppGenerator_Generate_MultiTemplate() {
 	s.T.Expect(fileExists(filepath.Join(outputPath, "main.go"))).ToBeTrue()
 }
 
+func (s *GeneratorSuite) TestNewAppGenerator_WithFramework() {
+	gen := generator.NewAppGenerator("TestSpa", "spa", s.tmpDir).WithFramework("react")
+
+	s.T.Expect(gen.Framework).ToEqual("react")
+}
+
+func (s *GeneratorSuite) generateSpaApp(framework string) string {
+	outputPath := filepath.Join(s.tmpDir, "testspa-"+framework)
+	gen := generator.NewAppGenerator("TestSpa", "spa", outputPath).WithFramework(framework)
+
+	err := gen.Generate()
+	s.T.Expect(err).ToBeNil()
+
+	return outputPath
+}
+
+func (s *GeneratorSuite) TestAppGenerator_Generate_SpaTemplateReact() {
+	outputPath := s.generateSpaApp("react")
+
+	s.T.Expect(fileExists(filepath.Join(outputPath, "main.go"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "go.mod"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "Makefile"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "package.json"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "vite.config.js"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "src", "App.jsx"))).ToBeTrue()
+}
+
+func (s *GeneratorSuite) TestAppGenerator_Generate_SpaTemplateVue() {
+	outputPath := s.generateSpaApp("vue")
+
+	s.T.Expect(fileExists(filepath.Join(outputPath, "Makefile"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "package.json"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "src", "App.vue"))).ToBeTrue()
+}
+
+func (s *GeneratorSuite) TestAppGenerator_Generate_SpaTemplateSvelte() {
+	outputPath := s.generateSpaApp("svelte")
+
+	s.T.Expect(fileExists(filepath.Join(outputPath, "Makefile"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "package.json"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "src", "App.svelte"))).ToBeTrue()
+}
+
+func (s *GeneratorSuite) TestAppGenerator_Generate_SpaTemplateNg() {
+	outputPath := s.generateSpaApp("ng")
+
+	s.T.Expect(fileExists(filepath.Join(outputPath, "Makefile"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "package.json"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "angular.json"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "proxy.conf.json"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "src", "app", "app.component.ts"))).ToBeTrue()
+}
+
+func (s *GeneratorSuite) TestAppGenerator_Generate_Spa_VerbatimFrontendKeepsBraces() {
+	outputPath := s.generateSpaApp("vue")
+
+	content, err := os.ReadFile(filepath.Join(outputPath, "frontend", "src", "App.vue"))
+	s.T.Expect(err).ToBeNil()
+
+	// Verbatim copy must preserve Vue's own {{ }} interpolation
+	s.T.Expect(string(content)).ToContainString("{{ info.name }}")
+}
+
+func (s *GeneratorSuite) TestAppGenerator_Generate_Spa_TemplatedFilesRendered() {
+	outputPath := s.generateSpaApp("react")
+
+	makefile, err := os.ReadFile(filepath.Join(outputPath, "Makefile"))
+	s.T.Expect(err).ToBeNil()
+	s.T.Expect(string(makefile)).ToContainString("FRAMEWORK    := react")
+	s.T.Expect(string(makefile)).Not().ToContainString("{{.")
+
+	mainGo, err := os.ReadFile(filepath.Join(outputPath, "main.go"))
+	s.T.Expect(err).ToBeNil()
+	s.T.Expect(string(mainGo)).ToContainString("platforms/spa")
+	s.T.Expect(string(mainGo)).Not().ToContainString("{{.")
+
+	pkgJSON, err := os.ReadFile(filepath.Join(outputPath, "frontend", "package.json"))
+	s.T.Expect(err).ToBeNil()
+	s.T.Expect(string(pkgJSON)).ToContainString("testspa-frontend")
+}
+
+func (s *GeneratorSuite) TestAppGenerator_Generate_Spa_SkipsOtherFrameworks() {
+	outputPath := s.generateSpaApp("react")
+
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "angular.json"))).ToBeFalse()
+	s.T.Expect(fileExists(filepath.Join(outputPath, "frontend", "src", "App.vue"))).ToBeFalse()
+	s.T.Expect(dirExists(filepath.Join(outputPath, "frontends"))).ToBeFalse()
+}
+
 func (s *GeneratorSuite) TestAppGenerator_Generate_CreatesAppModule() {
 	outputPath := filepath.Join(s.tmpDir, "testapp1")
 	gen := generator.NewAppGenerator("TestApp", "api", outputPath)
@@ -285,6 +374,15 @@ func (s *GeneratorSuite) TestDetectAppType_WebApp() {
 
 	s.T.Expect(err).ToBeNil()
 	s.T.Expect(appType).ToEqual("web")
+}
+
+func (s *GeneratorSuite) TestDetectAppType_SpaApp() {
+	appPath := s.createMockApp("spa")
+
+	appType, err := generator.DetectAppType(appPath)
+
+	s.T.Expect(err).ToBeNil()
+	s.T.Expect(appType).ToEqual("spa")
 }
 
 func (s *GeneratorSuite) TestDetectAppType_NoMainGo_ReturnsError() {

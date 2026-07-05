@@ -1,0 +1,61 @@
+# {{.AppName}}
+
+A Goose single-page application: a Go backend that serves JSON API routes
+under `/api` and the built **{{.Framework}}** frontend for every other path
+— one service, one port.
+
+## Structure
+
+```
+{{.AppNameLower}}/
+├── main.go            # Bootstraps the goose SPA platform (port 8080)
+├── app/               # Backend modules (JSON API, routes served under /api)
+├── frontend/          # {{.Framework}} source (builds into public/)
+├── public/            # Built frontend assets (generated, git-ignored)
+├── tests/             # Backend tests
+└── Makefile           # install / dev / build / dist workflow
+```
+
+## Getting started
+
+```bash
+make install     # go mod tidy + npm install
+make dev         # Go API on :8080 + {{.Framework}} dev server together
+```
+
+During development the {{.Framework}} dev server proxies `/api` requests to
+the Go backend, so the frontend gets hot reload while hitting real endpoints.
+
+## Routes
+
+Backend routes are declared without the `/api` prefix — the platform adds it:
+
+| Declared      | Served at          |
+|---------------|--------------------|
+| `GET /`       | `GET /api`         |
+| `GET /version`| `GET /api/version` |
+
+Any non-`/api` path serves a file from `public/` if it exists, and falls
+back to `public/index.html` for client-side routes.
+
+## Production
+
+```bash
+make dist        # frontend build -> public/, then binary + assets -> dist/
+cd dist && ./{{.AppNameLower}}
+```
+
+## Make targets
+
+| Target           | What it does                                        |
+|------------------|-----------------------------------------------------|
+| `install`        | Go + npm dependencies                               |
+| `dev`            | Backend and frontend dev servers together           |
+| `dev-backend`    | Go server only (:8080)                              |
+| `dev-frontend`   | {{.Framework}} dev server only (`/api` proxied)     |
+| `build-frontend` | Transpile/bundle frontend into `public/`            |
+| `build`          | Compile the Go binary                               |
+| `dist`           | Full distribution bundle in `dist/`                 |
+| `run`            | Frontend build, then serve everything from Go       |
+| `test`           | Go tests                                            |
+| `clean`          | Remove binaries, builds, and installed dependencies |

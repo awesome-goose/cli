@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"{{.ModulePath}}/app/cli"
+	"{{.ModulePath}}/app/shared"
 	test "github.com/awesome-goose/goose/testing"
 )
 
@@ -14,21 +15,26 @@ func TestCliController(t *testing.T) {
 type CliControllerSuite struct {
 	test.Suite
 	controller *cli.CliController
-	container  *test.TestContainer
 }
 
 func (s *CliControllerSuite) SetupTest() {
-	s.container = test.NewTestContainer()
-	s.container.Register(&cli.CliService{})
-	s.controller = &cli.CliController{}
-	s.container.Inject(s.controller)
+	s.controller = &cli.CliController{
+		Service:       &cli.CliService{},
+		SharedService: &shared.SharedService{},
+	}
 }
 
-func (s *CliControllerSuite) TestController_NotNil() {
-	s.T.Expect(s.controller).Not().ToBeNil()
+func (s *CliControllerSuite) TestInfo_ReturnsOutput() {
+	output := s.controller.Info(&cli.InfoInput{})
+	s.T.Expect(output).Not().ToBeNil()
 }
 
-func (s *CliControllerSuite) TestController_HasService() {
-	ct := test.NewControllerTest(s.T.T(), s.controller, s.container)
-	s.T.Expect(ct).Not().ToBeNil()
+func (s *CliControllerSuite) TestHelp_ReturnsOutput() {
+	output := s.controller.Help(&cli.HelpInput{})
+	s.T.Expect(output).Not().ToBeNil()
+}
+
+func (s *CliControllerSuite) TestVersion_ReturnsOutput() {
+	output := s.controller.Version(&cli.VersionInput{})
+	s.T.Expect(output).Not().ToBeNil()
 }

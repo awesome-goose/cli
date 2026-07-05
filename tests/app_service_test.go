@@ -37,7 +37,7 @@ func (s *AppServiceSuite) TeardownTest() {
 func (s *AppServiceSuite) TestGetVersion_ReturnsCorrectVersion() {
 	version := s.service.GetVersion()
 	s.T.Expect(version).Not().ToBeEmpty()
-	s.T.Expect(version).ToEqual("0.0.8")
+	s.T.Expect(version).ToEqual("0.0.9")
 }
 
 func (s *AppServiceSuite) TestGetVersion_ReturnsConsistentValue() {
@@ -48,7 +48,7 @@ func (s *AppServiceSuite) TestGetVersion_ReturnsConsistentValue() {
 
 func (s *AppServiceSuite) TestCreateApp_ApiTemplate_Success() {
 	appName := "testapi"
-	result, err := s.service.CreateApp(appName, "api", s.tmpDir)
+	result, err := s.service.CreateApp(appName, "api", s.tmpDir, "")
 
 	s.T.Expect(err).ToBeNil()
 	s.T.Expect(result).Not().ToBeNil()
@@ -67,7 +67,7 @@ func (s *AppServiceSuite) TestCreateApp_ApiTemplate_Success() {
 
 func (s *AppServiceSuite) TestCreateApp_CliTemplate_Success() {
 	appName := "testcli"
-	result, err := s.service.CreateApp(appName, "cli", s.tmpDir)
+	result, err := s.service.CreateApp(appName, "cli", s.tmpDir, "")
 
 	s.T.Expect(err).ToBeNil()
 	s.T.Expect(result).Not().ToBeNil()
@@ -81,7 +81,7 @@ func (s *AppServiceSuite) TestCreateApp_CliTemplate_Success() {
 
 func (s *AppServiceSuite) TestCreateApp_WebTemplate_Success() {
 	appName := "testweb"
-	result, err := s.service.CreateApp(appName, "web", s.tmpDir)
+	result, err := s.service.CreateApp(appName, "web", s.tmpDir, "")
 
 	s.T.Expect(err).ToBeNil()
 	s.T.Expect(result).Not().ToBeNil()
@@ -95,7 +95,7 @@ func (s *AppServiceSuite) TestCreateApp_WebTemplate_Success() {
 
 func (s *AppServiceSuite) TestCreateApp_MultiTemplate_Success() {
 	appName := "testmulti"
-	result, err := s.service.CreateApp(appName, "multi", s.tmpDir)
+	result, err := s.service.CreateApp(appName, "multi", s.tmpDir, "")
 
 	s.T.Expect(err).ToBeNil()
 	s.T.Expect(result).Not().ToBeNil()
@@ -108,12 +108,31 @@ func (s *AppServiceSuite) TestCreateApp_MultiTemplate_Success() {
 	s.T.Expect(dirExists(appPath)).ToBeTrue()
 }
 
+func (s *AppServiceSuite) TestCreateApp_SpaTemplate_Success() {
+	appName := "testspa"
+	result, err := s.service.CreateApp(appName, "spa", s.tmpDir, "react")
+
+	s.T.Expect(err).ToBeNil()
+	s.T.Expect(result).Not().ToBeNil()
+
+	resultStr := joinStrings(result)
+	s.T.Expect(resultStr).ToContainString("Created spa application")
+	s.T.Expect(resultStr).ToContainString("make install")
+	s.T.Expect(resultStr).ToContainString("make dist")
+	s.T.Expect(resultStr).ToContainString("react")
+
+	appPath := filepath.Join(s.tmpDir, appName)
+	s.T.Expect(dirExists(appPath)).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(appPath, "Makefile"))).ToBeTrue()
+	s.T.Expect(fileExists(filepath.Join(appPath, "frontend", "package.json"))).ToBeTrue()
+}
+
 func (s *AppServiceSuite) TestCreateApp_DirectoryAlreadyExists_ReturnsError() {
 	appName := "existing"
 	appPath := filepath.Join(s.tmpDir, appName)
 	os.MkdirAll(appPath, 0755)
 
-	result, err := s.service.CreateApp(appName, "api", s.tmpDir)
+	result, err := s.service.CreateApp(appName, "api", s.tmpDir, "")
 
 	s.T.Expect(err).Not().ToBeNil()
 	s.T.Expect(result).ToBeNil()
@@ -126,7 +145,7 @@ func (s *AppServiceSuite) TestCreateApp_EmptyPath_UsesCurrentDirectory() {
 	defer os.Chdir(originalDir)
 
 	appName := "testapp"
-	result, err := s.service.CreateApp(appName, "api", "")
+	result, err := s.service.CreateApp(appName, "api", "", "")
 
 	s.T.Expect(err).ToBeNil()
 	s.T.Expect(result).Not().ToBeNil()
@@ -137,7 +156,7 @@ func (s *AppServiceSuite) TestCreateApp_EmptyPath_UsesCurrentDirectory() {
 
 func (s *AppServiceSuite) TestCreateApp_NextStepsIncluded() {
 	appName := "testappsteps"
-	result, err := s.service.CreateApp(appName, "api", s.tmpDir)
+	result, err := s.service.CreateApp(appName, "api", s.tmpDir, "")
 
 	s.T.Expect(err).ToBeNil()
 
@@ -150,7 +169,7 @@ func (s *AppServiceSuite) TestCreateApp_NextStepsIncluded() {
 
 func (s *AppServiceSuite) TestCreateApp_LocationIncluded() {
 	appName := "testapp2"
-	result, err := s.service.CreateApp(appName, "api", s.tmpDir)
+	result, err := s.service.CreateApp(appName, "api", s.tmpDir, "")
 
 	s.T.Expect(err).ToBeNil()
 

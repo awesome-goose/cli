@@ -4,42 +4,28 @@ import (
 	"testing"
 
 	"{{.ModulePath}}/app/web"
-	"github.com/awesome-goose/goose/testing"
+	test "github.com/awesome-goose/goose/testing"
 )
 
 func TestWebController(t *testing.T) {
-	runner := testing.NewSuiteRunner(t, &testing.Suite{
-		Name: "WebController",
-	})
+	test.NewSuiteRunner(t, &WebControllerSuite{}).Run()
+}
 
-	container := testing.NewTestContainer(t)
+type WebControllerSuite struct {
+	test.Suite
+	controller *web.WebController
+}
 
-	runner.Run("should create WebController", func(t *testing.T) {
-		controller := &web.WebController{
-			Service: &web.WebService{},
-		}
-		if controller == nil {
-			t.Error("Expected controller to be created")
-		}
-	})
+func (s *WebControllerSuite) SetupTest() {
+	s.controller = &web.WebController{Service: &web.WebService{}}
+}
 
-	runner.Run("should have Status method", func(t *testing.T) {
-		ct := testing.NewControllerTest(t, &web.WebController{
-			Service: &web.WebService{},
-		}, container)
-		result := ct.Run("Status", nil)
-		if result == nil {
-			t.Error("Expected Status to return output")
-		}
-	})
+func (s *WebControllerSuite) TestStatus_ReturnsOutput() {
+	output := s.controller.Status(&web.WebStatusInput{})
+	s.T.Expect(output).Not().ToBeNil()
+}
 
-	runner.Run("should have Home method", func(t *testing.T) {
-		ct := testing.NewControllerTest(t, &web.WebController{
-			Service: &web.WebService{},
-		}, container)
-		result := ct.Run("Home", nil)
-		if result == nil {
-			t.Error("Expected Home to return output")
-		}
-	})
+func (s *WebControllerSuite) TestHome_ReturnsOutput() {
+	output := s.controller.Home(&web.WebHomeInput{})
+	s.T.Expect(output).Not().ToBeNil()
 }

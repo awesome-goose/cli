@@ -5,6 +5,7 @@ import (
 
 	"{{.ModulePath}}/app/api"
 	test "github.com/awesome-goose/goose/testing"
+	"github.com/awesome-goose/goose/types"
 )
 
 func TestApiRoutes(t *testing.T) {
@@ -17,11 +18,11 @@ type ApiRoutesSuite struct {
 }
 
 func (s *ApiRoutesSuite) SetupTest() {
-	s.routeTest = test.NewRouteTest(s.T.T(), api.API_ROUTES.Routes())
-}
-
-func (s *ApiRoutesSuite) TestRoutes_NotNil() {
-	s.T.Expect(s.routeTest.Routes()).Not().ToBeNil()
+	routes, err := api.API_ROUTES.(types.Router).Routes()
+	if err != nil {
+		s.T.T().Fatal(err)
+	}
+	s.routeTest = test.NewRouteTest(s.T.T(), routes)
 }
 
 func (s *ApiRoutesSuite) TestRoutes_HasRoutes() {

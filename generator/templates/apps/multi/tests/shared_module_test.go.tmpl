@@ -4,51 +4,35 @@ import (
 	"testing"
 
 	"{{.ModulePath}}/app/shared"
-	"github.com/awesome-goose/goose/testing"
+	test "github.com/awesome-goose/goose/testing"
 )
 
 func TestSharedModule(t *testing.T) {
-	runner := testing.NewSuiteRunner(t, &testing.Suite{
-		Name: "SharedModule",
-	})
+	test.NewSuiteRunner(t, &SharedModuleSuite{}).Run()
+}
 
-	container := testing.NewTestContainer(t)
+type SharedModuleSuite struct {
+	test.Suite
+	module     *shared.SharedModule
+	moduleTest *test.ModuleTest
+}
 
-	runner.Run("should create SharedModule", func(t *testing.T) {
-		module := &shared.SharedModule{}
-		if module == nil {
-			t.Error("Expected module to be created")
-		}
-	})
+func (s *SharedModuleSuite) SetupTest() {
+	s.module = &shared.SharedModule{}
+	container := test.NewTestContainer()
+	s.moduleTest = test.NewModuleTest(s.T.T(), s.module, container)
+}
 
-	runner.Run("should have valid Imports", func(t *testing.T) {
-		mt := testing.NewModuleTest(t, &shared.SharedModule{}, container)
-		mt.TestImports()
-	})
+func (s *SharedModuleSuite) TestModule_NotNil() {
+	s.T.Expect(s.module).Not().ToBeNil()
+}
 
-	runner.Run("should have valid Exports", func(t *testing.T) {
-		mt := testing.NewModuleTest(t, &shared.SharedModule{}, container)
-		mt.TestExports()
-	})
+func (s *SharedModuleSuite) TestModule_ExportsSharedService() {
+	exports := s.module.Exports()
+	s.T.Expect(len(exports) > 0).ToEqual(true)
+}
 
-	runner.Run("should have valid Declarations", func(t *testing.T) {
-		mt := testing.NewModuleTest(t, &shared.SharedModule{}, container)
-		mt.TestDeclarations()
-	})
-
-	runner.Run("should export SharedService", func(t *testing.T) {
-		module := &shared.SharedModule{}
-		exports := module.Exports()
-		if len(exports) < 1 {
-			t.Error("Expected SharedModule to export SharedService")
-		}
-	})
-
-	runner.Run("should declare SharedService", func(t *testing.T) {
-		module := &shared.SharedModule{}
-		declarations := module.Declarations()
-		if len(declarations) < 1 {
-			t.Error("Expected SharedModule to declare SharedService")
-		}
-	})
+func (s *SharedModuleSuite) TestModule_DeclaresSharedService() {
+	declarations := s.moduleTest.TestDeclarations()
+	s.T.Expect(len(declarations) > 0).ToEqual(true)
 }

@@ -4,28 +4,36 @@ import (
 	"testing"
 
 	"{{.ModulePath}}/app/web"
-	"github.com/awesome-goose/goose/testing"
+	test "github.com/awesome-goose/goose/testing"
+	"github.com/awesome-goose/goose/types"
 )
 
 func TestWebRoutes(t *testing.T) {
-	runner := testing.NewSuiteRunner(t, &testing.Suite{
-		Name: "WebRoutes",
-	})
+	test.NewSuiteRunner(t, &WebRoutesSuite{}).Run()
+}
 
-	runner.Run("should define WEB_ROUTES", func(t *testing.T) {
-		routes := web.WEB_ROUTES
-		if routes == nil {
-			t.Error("Expected WEB_ROUTES to be defined")
-		}
-	})
+type WebRoutesSuite struct {
+	test.Suite
+	routeTest *test.RouteTest
+}
 
-	runner.Run("should have home route", func(t *testing.T) {
-		rt := testing.NewRouteTest(t, web.WEB_ROUTES)
-		rt.TestRouteExists("GET", []string{"/"})
-	})
+func (s *WebRoutesSuite) SetupTest() {
+	routes, err := web.WEB_ROUTES.(types.Router).Routes()
+	if err != nil {
+		s.T.T().Fatal(err)
+	}
+	s.routeTest = test.NewRouteTest(s.T.T(), routes)
+}
 
-	runner.Run("should have status route", func(t *testing.T) {
-		rt := testing.NewRouteTest(t, web.WEB_ROUTES)
-		rt.TestRouteExists("GET", []string{"/status"})
-	})
+func (s *WebRoutesSuite) TestRoutes_HasRoutes() {
+	routes := s.routeTest.Routes()
+	s.T.Expect(len(routes) > 0).ToEqual(true)
+}
+
+func (s *WebRoutesSuite) TestRoutes_HomeRouteExists() {
+	s.routeTest.TestRouteExists("GET", []string{""})
+}
+
+func (s *WebRoutesSuite) TestRoutes_StatusRouteExists() {
+	s.routeTest.TestRouteExists("GET", []string{"status"})
 }

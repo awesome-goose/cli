@@ -23,10 +23,15 @@ var appTemplates embed.FS
 //go:embed all:templates/modules
 var moduleTemplates embed.FS
 
+// frontendsDirName is the template subdirectory holding per-framework
+// frontend variants; only the chosen framework's tree is generated.
+const frontendsDirName = "frontends"
+
 // AppGenerator generates a new application from templates
 type AppGenerator struct {
 	Name       string
 	Template   string
+	Framework  string
 	OutputPath string
 	ModulePath string
 	data       map[string]string
@@ -46,15 +51,25 @@ func NewAppGenerator(name, tmpl, outputPath string) *AppGenerator {
 			"AppNameLower": strings.ToLower(name),
 			"AppNameSnake": toSnakeCase(name),
 			"ModulePath":   modulePath,
+			"Framework":    "",
 		},
 	}
+}
+
+// WithFramework selects the frontend framework variant to generate
+func (g *AppGenerator) WithFramework(framework string) *AppGenerator {
+	g.Framework = framework
+	g.data["Framework"] = framework
+	return g
 }
 
 // Generate creates the application structure
 func (g *AppGenerator) Generate() error {
 	templateDir := fmt.Sprintf("templates/apps/%s", g.Template)
+	variantsRoot := templateDir + "/" + frontendsDirName
 
-	return fs.WalkDir(appTemplates, templateDir, func(path string, d fs.DirEntry, err error) error {
+	// Pass 1: shared files, skipping the frontend variant tree
+	err := fs.WalkDir(appTemplates, templateDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -64,42 +79,69 @@ func (g *AppGenerator) Generate() error {
 			return nil
 		}
 
-		// Calculate relative path
-		relPath := strings.TrimPrefix(path, templateDir+"/")
-
-		// Remove .tmpl extension for output
-		outputRelPath := strings.TrimSuffix(relPath, ".tmpl")
-		outputPath := filepath.Join(g.OutputPath, outputRelPath)
-
-		if d.IsDir() {
-			return os.MkdirAll(outputPath, 0755)
+		if path == variantsRoot {
+			return fs.SkipDir
 		}
 
-		// Read template content
-		content, err := appTemplates.ReadFile(path)
+		return g.emit(path, strings.TrimPrefix(path, templateDir+"/"), d)
+	})
+	if err != nil || g.Framework == "" {
+		return err
+	}
+
+	// Pass 2: the chosen frontend variant, remapped under frontend/
+	variantDir := variantsRoot + "/" + g.Framework
+
+	return fs.WalkDir(appTemplates, variantDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return fmt.Errorf("failed to read template %s: %w", path, err)
+			return err
 		}
 
-		// Process template
+		if path == variantDir {
+			return nil
+		}
+
+		return g.emit(path, "frontend/"+strings.TrimPrefix(path, variantDir+"/"), d)
+	})
+}
+
+// emit writes a single template entry to the output tree. Files ending in
+// .tmpl are rendered with the generator data; all other files are copied
+// verbatim so frontend sources keep their own {{ }} syntax.
+func (g *AppGenerator) emit(srcPath, relPath string, d fs.DirEntry) error {
+	outputRelPath := strings.TrimSuffix(relPath, ".tmpl")
+	outputPath := filepath.Join(g.OutputPath, outputRelPath)
+
+	if d.IsDir() {
+		return os.MkdirAll(outputPath, 0755)
+	}
+
+	content, err := appTemplates.ReadFile(srcPath)
+	if err != nil {
+		return fmt.Errorf("failed to read template %s: %w", srcPath, err)
+	}
+
+	out := content
+	if strings.HasSuffix(relPath, ".tmpl") {
 		processed, err := g.processTemplate(string(content))
 		if err != nil {
-			return fmt.Errorf("failed to process template %s: %w", path, err)
+			return fmt.Errorf("failed to process template %s: %w", srcPath, err)
 		}
+		out = []byte(processed)
+	}
 
-		// Create parent directories
-		if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
-			return fmt.Errorf("failed to create directory: %w", err)
-		}
+	// Create parent directories
+	if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
+		return fmt.Errorf("failed to create directory: %w", err)
+	}
 
-		// Write file
-		if err := os.WriteFile(outputPath, []byte(processed), 0644); err != nil {
-			return fmt.Errorf("failed to write file %s: %w", outputPath, err)
-		}
+	// Write file
+	if err := os.WriteFile(outputPath, out, 0644); err != nil {
+		return fmt.Errorf("failed to write file %s: %w", outputPath, err)
+	}
 
-		fmt.Printf("  Created: %s\n", outputRelPath)
-		return nil
-	})
+	fmt.Printf("  Created: %s\n", outputRelPath)
+	return nil
 }
 
 func (g *AppGenerator) processTemplate(content string) (string, error) {
@@ -142,10 +184,18 @@ func NewModuleGenerator(name, moduleType, template, appPath string) *ModuleGener
 
 // Generate creates the module structure
 func (g *ModuleGenerator) Generate() error {
+	// Resolve the app's module path from go.mod so templates can import
+	// the generated package
+	modulePath, err := readModulePath(g.AppPath)
+	if err != nil {
+		return err
+	}
+	g.data["ModulePath"] = modulePath
+
 	templateDir := fmt.Sprintf("templates/modules/%s/%s", g.ModuleType, g.Template)
 	outputDir := filepath.Join(g.AppPath, "app", strings.ToLower(g.Name))
 
-	err := fs.WalkDir(moduleTemplates, templateDir, func(path string, d fs.DirEntry, err error) error {
+	err = fs.WalkDir(moduleTemplates, templateDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -232,20 +282,10 @@ func (g *ModuleGenerator) updateAppModule() error {
 	moduleNameLower := strings.ToLower(g.Name)
 	moduleName := toPascalCase(g.Name)
 
-	// Find the module path from go.mod
-	goModPath := filepath.Join(g.AppPath, "go.mod")
-	goModContent, err := os.ReadFile(goModPath)
+	basePath, err := readModulePath(g.AppPath)
 	if err != nil {
-		return fmt.Errorf("failed to read go.mod: %w", err)
+		return err
 	}
-
-	// Extract module path
-	modulePathRegex := regexp.MustCompile(`module\s+(\S+)`)
-	matches := modulePathRegex.FindSubmatch(goModContent)
-	if len(matches) < 2 {
-		return fmt.Errorf("failed to find module path in go.mod")
-	}
-	basePath := string(matches[1])
 
 	// Add import if not exists
 	importLine := fmt.Sprintf(`"%s/app/%s"`, basePath, moduleNameLower)
@@ -276,6 +316,23 @@ func (g *ModuleGenerator) updateAppModule() error {
 
 	fmt.Printf("  Updated: app/app.module.go\n")
 	return nil
+}
+
+// readModulePath extracts the module path from an app's go.mod
+func readModulePath(appPath string) (string, error) {
+	goModPath := filepath.Join(appPath, "go.mod")
+	goModContent, err := os.ReadFile(goModPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to read go.mod: %w", err)
+	}
+
+	modulePathRegex := regexp.MustCompile(`module\s+(\S+)`)
+	matches := modulePathRegex.FindSubmatch(goModContent)
+	if len(matches) < 2 {
+		return "", fmt.Errorf("failed to find module path in go.mod")
+	}
+
+	return string(matches[1]), nil
 }
 
 // Helper functions
@@ -320,6 +377,9 @@ func DetectAppType(appPath string) (string, error) {
 
 	contentStr := string(content)
 
+	if strings.Contains(contentStr, "platforms/spa") {
+		return "spa", nil
+	}
 	if strings.Contains(contentStr, "platforms/api") {
 		return "api", nil
 	}
